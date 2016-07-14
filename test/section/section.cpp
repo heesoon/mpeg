@@ -150,7 +150,7 @@ RESULT_T CSection::readMediaFromFile(SECTION_INFO_T* sectionInfo)
 	}
 	else
 	{
-		sectionInfo->pid = 0;
+		sectionInfo->pid = 0x1FFF; // default PID
 		return RESULT_INVALID;
 	}
 
