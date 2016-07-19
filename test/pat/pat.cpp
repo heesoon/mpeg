@@ -61,25 +61,15 @@ bool PAT::isPmtPid(UINT16 pmtPid)
 	return false;
 }
 
-bool PAT::isExistPat(UINT8 vserion_number, UINT8 section_number)
+bool PAT::isExistPat(UINT8 version_number, UINT8 section_number)
 {
 	for(auto program : patList)
 	{
-		if( (program.version == vserion_number) && (program.section_number == section_number) )
+		if( (program.version == version_number) && (program.section_number == section_number) )
 			return true;
-		else
-			return false;
 	}
-}
 
-UINT32 PAT::getPATProgNum(void)
-{
-	return numProgs; 
-}
-
-std::forward_list<PROGRAM_T>& PAT::getPatList(void)
-{
-	return patList;
+	return false;
 }
 
 void PAT::printPATList(void)
@@ -145,7 +135,6 @@ RESULT_T PAT::parsingPATSection(UINT8 *pData)
 	last_section_number = pSection[7];
 	PRINT_PAT_HEADER_INFO(last_section_number);
 
-
 	if( isExistPat(version_number, section_number) == true )
 	{
 		return RESULT_NOTOK;
@@ -171,4 +160,14 @@ RESULT_T PAT::parsingPATSection(UINT8 *pData)
 	}
 
 	return RESULT_OK;
+}
+
+UINT32 PAT::getPATProgNum(void)
+{
+	return numProgs; 
+}
+
+std::forward_list<PROGRAM_T>& PAT::getPatList(void)
+{
+	return patList;
 }

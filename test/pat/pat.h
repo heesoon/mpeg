@@ -13,7 +13,7 @@
 ------------------------------------------------------------------------------------------------------------------- */
 #define PAT_HEADER_SIZE 	8
 
-#define PRINT_PAT_HEADER
+//#define PRINT_PAT_HEADER
 #ifdef PRINT_PAT_HEADER
 #define PRINT_PAT_HEADER_INFO(x) std::printf("%30s = %10d [%#10x]\n", #x, x, x);
 #else
@@ -28,7 +28,7 @@ typedef struct {
 	UINT8 section_number;
     UINT16 program_number;
     UINT16 pmtPid;
-} PROGRAM_T;
+}PROGRAM_T;
 
 class PAT
 {
@@ -40,11 +40,11 @@ public :
 	PAT();
 	~PAT();
 	bool isPmtPid(UINT16 pmtPid);
-	bool isExistPat(UINT8 vserion_number, UINT8 section_number);
-	UINT32 getPATProgNum(void);
-	std::forward_list<PROGRAM_T>& getPatList(void);	
+	bool isExistPat(UINT8 version_number, UINT8 section_number);
 	void printPATList(void);
 	RESULT_T parsingPATSection(UINT8 *pData);
+	UINT32 getPATProgNum(void);
+	std::forward_list<PROGRAM_T>& getPatList(void);
 };
 
 #endif
