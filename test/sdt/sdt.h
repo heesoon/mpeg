@@ -2,6 +2,7 @@
 #define __SDT_H__
 
 #include <cstdio>
+#include <cstring>
 #include <iostream>
 #include <string>
 #include <memory>

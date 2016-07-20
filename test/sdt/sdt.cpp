@@ -128,7 +128,6 @@ void SDT::printSDTList(void)
 	}
 }
 
-#include <cstring>
 RESULT_T SDT::parsingServiceDescriptor(SDT_INFO_T* sdtInfo, UINT8 *pData)
 {
 	UINT8 descriptor_tag;
