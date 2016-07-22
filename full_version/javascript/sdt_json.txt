@@ -1,0 +1,68 @@
+[
+    {
+        "version" : 1,
+        "section_number" : 0,
+        "service_id" : 208,
+        "EIT_schedule_flag" : false,
+        "EIT_present_following_flag" : true,
+        "running_status" : 4,
+        "free_CA_mode" : false,
+        "servicProvideeName" : "MediaCorp TV",
+        "serviceName" : "TV1_SD"
+    },
+    {
+        "version" : 1,
+        "section_number" : 0,
+        "service_id" : 209,
+        "EIT_schedule_flag" : false,
+        "EIT_present_following_flag" : true,
+        "running_status" : 4,
+        "free_CA_mode" : false,
+        "servicProvideeName" : "MediaCorp TV",
+        "serviceName" : "TV2_SD"
+    },
+    {
+        "version" : 1,
+        "section_number" : 0,
+        "service_id" : 210,
+        "EIT_schedule_flag" : false,
+        "EIT_present_following_flag" : true,
+        "running_status" : 4,
+        "free_CA_mode" : false,
+        "servicProvideeName" : "MediaCorp TV",
+        "serviceName" : "TV3_HD"
+    },
+    {
+        "version" : 1,
+        "section_number" : 0,
+        "service_id" : 211,
+        "EIT_schedule_flag" : false,
+        "EIT_present_following_flag" : true,
+        "running_status" : 4,
+        "free_CA_mode" : false,
+        "servicProvideeName" : "MediaCorp TV",
+        "serviceName" : "TV4_HD"
+    },
+    {
+        "version" : 1,
+        "section_number" : 0,
+        "service_id" : 212,
+        "EIT_schedule_flag" : false,
+        "EIT_present_following_flag" : true,
+        "running_status" : 4,
+        "free_CA_mode" : false,
+        "servicProvideeName" : "MediaCorp TV",
+        "serviceName" : "TV5_Radio"
+    },
+    {
+        "version" : 1,
+        "section_number" : 0,
+        "service_id" : 213,
+        "EIT_schedule_flag" : false,
+        "EIT_present_following_flag" : true,
+        "running_status" : 4,
+        "free_CA_mode" : false,
+        "servicProvideeName" : "MediaCorp TV",
+        "serviceName" : "TV6_Rad"
+    }
+]
