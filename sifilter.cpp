@@ -5,6 +5,8 @@
 #include <thread>
 #include <functional>
 #include <mutex>
+#include <queue>
+#include <vector>
 
 #define MAX_FILTER_NUM 0x2000
 #define PRINT_HEADER_MARK(c, l) {for(int i = 0; i < (l); i++) std::printf("%c", (c)); std::printf("\n");}
@@ -163,8 +165,86 @@ void CTSfilter::requestSection(int pid)
 	//tr.join();
 }
 
+#if 0
+typedef struct _msgInfo_t
+{
+	int msgQId;
+	std::queue msgQ;
+	std::string msgName;
+} msgInfo_t;
+#endif
+
+template <typename T>
+class CMessageQueue
+{
+private :
+	int numOfQueue;
+	struct msgInfo_t
+	{
+		int msgQid;
+		std::queue<T> msgQ;
+		std::string msgName;
+	};
+	std::vector<msgInfo_t> vMsgInfo;
+public  :
+	CMessageQueue();
+	virtual ~CMessageQueue();
+	void createMsgQueue(std::string name);
+	std::queue<T> getMessageQueue(std::string name);
+	void printMessageQueue();
+
+};
+
+template <typename T>
+CMessageQueue<T>::CMessageQueue()
+{
+	std::cout << __FUNCTION__ << " called !!" << std::endl;
+	numOfQueue = 0;
+}
+
+template <typename T>
+CMessageQueue<T>::~CMessageQueue()
+{
+	std::cout << __FUNCTION__ << " called !!" << std::endl;
+}
+
+template <typename T>
+void CMessageQueue<T>::createMsgQueue(std::string name)
+{
+	msgInfo_t msgInfo;
+
+	msgInfo.msgName = name;
+	msgInfo.msgQid = ++numOfQueue;
+	vMsgInfo.push_back(msgInfo);
+}
+
+template <typename T>
+void CMessageQueue<T>::printMessageQueue()
+{
+	for(msgInfo_t msg : vMsgInfo)
+	{
+		std::cout << msg.msgName << std::endl;
+		std::cout << msg.msgQid << std::endl;
+	}
+}
+
+template <typename T>
+std::queue<T> CMessageQueue<T>::getMessageQueue(std::string name)
+{
+	std::cout << __FUNCTION__ << " called !!" << std::endl;
+
+	for(msgInfo_t msg : vMsgInfo)
+	{
+		if(msg.msgName.compare(name) == 0)
+		{
+			return msg.msgQ;
+		}
+	}
+}
+
 int main(int argc, char *argv[])
 {
+#if 0	
 	CTSfilter tsfilter;
 	tsfilter.requestSection(0);
 	tsfilter.requestSection(1);
@@ -179,5 +259,113 @@ int main(int argc, char *argv[])
 		tsfilter.filterTaskId[48].join();
 		tsfilter.filterTaskId[2].join();
 	}
+#endif
+
+	CMessageQueue<int> msgQueue;
+	msgQueue.createMsgQueue("heesoon.kim");
+	msgQueue.createMsgQueue("heesub.kim");
+	msgQueue.createMsgQueue("heehyeon.kim");
+
+	//msgQueue.printMessageQueue();
+	std::queue<int> queue = msgQueue.getMessageQueue("heesub.kim");
+
+	queue.push(10);
+	queue.push(20);
+	queue.push(30);
+
+	std::cout << "size : " << queue.size() << std::endl;
+	while(!queue.empty())
+	{
+		std::cout << queue.front() << std::endl;
+		queue.pop();
+	}
+
 	return 0;
 }
+
+#if 0
+#include <iostream>
+#include <queue>
+#include <vector>
+#include <memory>
+
+template <typename T>
+class CMessageQueue
+{
+private :
+    unsigned int numOfQid;
+    struct messageQueueInfo
+    {
+        std::queue<T> msgQ;
+        std::string msgName;
+        int msgQId;
+    };
+    
+    std::vector<messageQueueInfo*> vMessageQueuePool;
+public  :
+    CMessageQueue();
+    virtual ~CMessageQueue();
+    void createMessageQueue(std::string name);
+    void printMessageQueuePool(void);
+};
+
+template <typename T>
+CMessageQueue<T>::CMessageQueue()
+{
+    std::cout << __FUNCTION__ << std::endl;
+    numOfQid = 0;
+}
+
+template <typename T>
+CMessageQueue<T>::~CMessageQueue()
+{
+    std::cout << __FUNCTION__ << std::endl;
+    for(messageQueueInfo *q : vMessageQueuePool)
+    {
+        delete q;
+        std::cout << "delete queue info" << std::endl;
+    }
+}
+
+template <typename T>
+void CMessageQueue<T>::createMessageQueue(std::string name)
+{
+    std::cout << __FUNCTION__ << std::endl;
+    messageQueueInfo *newMessageQueue = new messageQueueInfo;
+    
+    newMessageQueue->msgName = name;
+    newMessageQueue->msgQId = ++numOfQid;
+    
+    vMessageQueuePool.push_back(newMessageQueue);
+}
+
+template <typename T>
+void CMessageQueue<T>::printMessageQueuePool(void)
+{
+    std::cout << __FUNCTION__ << std::endl;
+    for(messageQueueInfo *q : vMessageQueuePool)
+    {
+        std::cout << q->msgName << std::endl;
+        std::cout << q->msgQId << std::endl;
+    }
+}
+
+int main()
+{
+#if 0    
+    CMessageQueue<int> msgQ;
+    msgQ.createMessageQueue("heesoon.kim");
+    msgQ.createMessageQueue("xxxxxxxxx");
+    msgQ.createMessageQueue("zzzzzzzzzzz");
+    msgQ.printMessageQueuePool();
+#endif
+    
+    std::shared_ptr<CMessageQueue<int>> pSharedMsgQ = std::make_shared<CMessageQueue<int>>();
+    pSharedMsgQ->createMessageQueue("heesoon.kim");
+    pSharedMsgQ->createMessageQueue("xxxxxxxxx");
+    pSharedMsgQ->createMessageQueue("zzzzzzzzzzz");
+    pSharedMsgQ->printMessageQueuePool();
+    
+    return 0;
+}
+#endif
