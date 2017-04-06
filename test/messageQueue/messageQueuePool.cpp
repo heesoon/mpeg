@@ -4,6 +4,7 @@
 #include <mutex>
 #include <map>
 #include <thread>
+#include <chrono>
 
 template <typename T>
 class CMessageQueuePool;
@@ -20,7 +21,8 @@ public  :
     CMessageQueue();
     virtual ~CMessageQueue();
     void sendMessage(T msg);
-    T receiveMessage(void);    
+    T receiveMessage(void);
+    bool isMessageQueueEmpty(void);
 };
 
 template <typename T>
@@ -62,22 +64,47 @@ T CMessageQueue<T>::receiveMessage(void)
 }
 
 template <typename T>
+bool CMessageQueue<T>::isMessageQueueEmpty(void)
+{
+    std::cout << __FUNCTION__ << std::endl;
+    
+    bool isEmpty = false;
+    
+    mtx.lock();
+    isEmpty = msgQ.empty();
+    mtx.unlock();
+    
+    return isEmpty;
+}
+
+template <typename T>
 class CMessageQueuePool
 {
 private :
     std::map<std::string, CMessageQueue<T>*> poolOfmsgQ;
     //using iterType = typename std::map<std::string, CMessageQueue<T>*>;
+    CMessageQueuePool(){};    
+    static std::shared_ptr<CMessageQueuePool<T>> inst;
 public  :
-    CMessageQueuePool();
     virtual ~CMessageQueuePool();
+    static std::shared_ptr<CMessageQueuePool<T>> getInstance(void);
     bool createMessageQueue(std::string nameOfmsgQ);
     CMessageQueue<T>* getMessageQueue(std::string nameOfmsgQ);
 };
 
 template <typename T>
-CMessageQueuePool<T>::CMessageQueuePool()
+std::shared_ptr<CMessageQueuePool<T>> CMessageQueuePool<T>::inst = nullptr;
+
+template <typename T>
+std::shared_ptr<CMessageQueuePool<T>> CMessageQueuePool<T>::getInstance(void)
 {
     std::cout << __FUNCTION__ << std::endl;
+    if(inst == nullptr)
+    {
+        inst.reset(new CMessageQueuePool<T>);
+    }
+    
+    return inst;
 }
 
 template <typename T>
@@ -128,8 +155,8 @@ CMessageQueue<T>* CMessageQueuePool<T>::getMessageQueue(std::string nameOfmsgQ)
 }
 
 int main()
-{
-    std::shared_ptr<CMessageQueuePool<int>> pSharedPtr = std::make_shared<CMessageQueuePool<int>>();
+{   
+    auto pSharedPtr = CMessageQueuePool<int>::getInstance();
     pSharedPtr->createMessageQueue("heesoon.kim");
     
     CMessageQueue<int> *handlerOfmsgQ = pSharedPtr->getMessageQueue("heesoon.kim");
@@ -149,6 +176,11 @@ int main()
     std::thread receiver = std::thread([&](){
         while(1)
         {
+            if(handlerOfmsgQ->isMessageQueueEmpty())
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+            
             int data = handlerOfmsgQ->receiveMessage();
             std::cout << "recevie data : " << data << std::endl;
             if(data == 9)
