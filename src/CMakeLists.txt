@@ -29,8 +29,11 @@ set(DEPENDENT_LIBRARY_LIST
 # set source files built
 set(SRCS
 	${CMAKE_SOURCE_DIR}/src/sifilter.cpp
-	${CMAKE_SOURCE_DIR}/src/messageQueuePool.cpp
 )
+
+# install header files
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ DESTINATION ${INSTALL_INC_PATH}
+	FILES_MATCHING PATTERN "*.hpp")
 
 if (MPEG_STATIC)
 add_library(${STATIC_LIBRARY_NAME} STATIC

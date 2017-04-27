@@ -20,13 +20,6 @@ enum class DebugLevel4MessageQueuePool
 
 DebugLevel4MessageQueuePool gDebugLevel = DebugLevel4MessageQueuePool::DEBUG_LEVEL_TRACE;
 
-//const std::string red("\033[0;31m");
-//const std::string green("\033[1;32m");
-//const std::string yellow("\033[1;33m");
-//const std::string cyan("\033[0;36m");
-//const std::string magenta("\033[0;35m");
-//const std::string reset("\033[0m");
-
 #define DEBUG_PRINT(debugPrint, debugMsg)\
 {\
     if((debugPrint) <= gDebugLevel)\
@@ -248,50 +241,4 @@ void CMessageQueuePool<T>::setCurrentDebugLevel(DebugLevel4MessageQueuePool debu
 {
     gDebugLevel = debugLevel;
     DEBUG_PRINT(DebugLevel4MessageQueuePool::DEBUG_LEVEL_DEBUG, "");
-}
-
-int main()
-{   
-    auto pSharedPtr = CMessageQueuePool<int>::getInstance();
-    pSharedPtr->createMessageQueue("heesoon.kim");
-    
-    CMessageQueue<int> *handlerOfmsgQ = pSharedPtr->getMessageQueue("heesoon.kim");
-    if(handlerOfmsgQ == nullptr)
-    {
-        DEBUG_PRINT(DebugLevel4MessageQueuePool::DEBUG_LEVEL_NORMAL, "No Message handler Exist!!");
-        return 0;
-    }
-    
-    std::thread sender = std::thread([&](){
-        for(int i = 0; i < 10; i++)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
-            handlerOfmsgQ->sendMessage(i);
-        }
-    });
-    
-    std::thread receiver = std::thread([&](){
-        while(1)
-        {
-            //std::this_thread::sleep_for(std::chrono::milliseconds(500));
-            //int data = handlerOfmsgQ->receiveMessage();
-            int data = 0;
-            handlerOfmsgQ->receiveMessage(data);
-
-            std::stringstream ss;
-            std::string msg;
-
-            ss << "received data : " << data << std::endl;
-            msg = ss.str();
-
-            DEBUG_PRINT(DebugLevel4MessageQueuePool::DEBUG_LEVEL_NORMAL, msg.c_str());
-            if(data == 9)
-                break;
-        }
-    });
-
-    sender.join();
-    receiver.join();
-    
-    return 0;
 }
