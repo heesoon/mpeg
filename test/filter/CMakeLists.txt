@@ -1,12 +1,12 @@
 set(BIN_NAME filter)
 
 set(SRC_LIST
-  ${CMAKE_SOURCE_DIR}/test/filter/sifilter.cpp
+  ${CMAKE_SOURCE_DIR}/test/filter/main.cpp
 )
 
 # add include files 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-#  ${PROJECT_SOURCE_DIR}/src
+  ${PROJECT_SOURCE_DIR}/include
 )
 
 # find requred packagesa
@@ -18,8 +18,12 @@ set(CXX_DEBUG_FLAGS "-g")
 
 add_definitions(-std=c++11 -g -pthread)
 
+# set library search path
+link_directories(${CMAKE_SOURCE_DIR}/libs)
+
 set(LIB_LIST
   pthread
+  mpeg
   ${CMAKE_THREAD_LIBS_INIT}
 )
 
