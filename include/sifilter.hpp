@@ -24,33 +24,41 @@ For more information, please refer to <http://unlicense.org>
 #ifndef __SIFILTER_HPP__
 #define __SIFILTER_HPP__
 
-struct TSfilterInfo_t
-{
-    bool transport_error_indicator;
-    bool payload_unit_start_indicator;
-    bool transport_priority;
+#include <thread>
+#include <string>
+#include <vector>
+#include <functional>
 
-    unsigned short pid;                             // 13 bit
-    unsigned char transport_scrambling_control;     // 2 bit
-    unsigned char adaptation_field_control;         // 2 bit
-    unsigned char continuity_counter;               // 4 bit
-
-    unsigned char pointer_field;                    // 8 bit
-    unsigned char payload_length;
-    unsigned long long ts_packet_number;            // 64 bit
-};
+//using callBackType = std::function<void(unsigned char*, size_t)>;
+using callBackType = std::function<void(char*, size_t)>;
 
 class CTSfilter
 {
+	friend class CTSfilterManager;
 public  :
     CTSfilter();
     virtual ~CTSfilter();
-    //void requestSection(int pid);
-
 protected :
-    //std::thread filterTaskId[MAX_FILTER_NUM];
-    //std::ifstream fin;
-    //std::mutex mtx_lock;    
+	unsigned int pid;
+	//std::thread trId;
+	std::string filterName;
+	callBackType pCallBack;
 };
 
+class CTSfilterManager
+{
+public  :
+    static CTSfilterManager* getInstance(void);
+    //virtual void startReceiveBuffer(unsigned char *buffer, size_t num);
+    virtual void startReceiveBuffer(char *buffer, size_t num);
+    virtual void requestSectionFilter(std::string filterName, unsigned int pid, callBackType pCallBack);
+    virtual void closeRequestSectionFilter(unsigned int pid);
+    virtual void closeTSFilterMgr(void);
+protected :
+	std::vector<CTSfilter*> filterMgr;
+private :
+	static CTSfilterManager *inst;
+    CTSfilterManager();
+    virtual ~CTSfilterManager();
+};
 #endif
