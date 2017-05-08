@@ -30,7 +30,6 @@ For more information, please refer to <http://unlicense.org>
 #include <functional>
 #include <memory>
 
-//using callBackType = std::function<void(unsigned char*, size_t)>;
 using callBackType = std::function<void(char*, size_t)>;
 
 class CTSfilter
@@ -52,7 +51,7 @@ private :
 class CTSfilterManager
 {
 public  :
-#if 1
+#if 0
     static CTSfilterManager* getInstance(void);
 #else
     static std::shared_ptr<CTSfilterManager> getInstance(void);
@@ -61,16 +60,17 @@ public  :
     virtual void startReceiveBuffer(char *buffer, size_t num);
     virtual void requestSectionFilter(std::string filterName, unsigned int pid, callBackType pCallBack);
     virtual void closeRequestSectionFilter(unsigned int pid);
-    virtual void closeTSFilterMgr(void);
+    //virtual void closeTSFilterMgr(void);
+    virtual ~CTSfilterManager();
 protected :
 	std::vector<CTSfilter*> filterMgr;
 private :
-#if 1
+#if 0
 	static CTSfilterManager *inst;
 #else
     static std::shared_ptr<CTSfilterManager> inst;
-#endif    
+#endif
     CTSfilterManager();
-    virtual ~CTSfilterManager();
+    //virtual ~CTSfilterManager();
 };
 #endif

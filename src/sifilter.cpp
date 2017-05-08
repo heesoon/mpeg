@@ -89,7 +89,7 @@ CTSfilterManager::~CTSfilterManager()
     DEBUG_PRINT(DebugLevel4SifilerManager::DEBUG_LEVEL_TRACE, "");
 }
 
-#if 1
+#if 0
 CTSfilterManager* CTSfilterManager::inst = nullptr;
 CTSfilterManager* CTSfilterManager::getInstance(void)
 {
@@ -154,6 +154,7 @@ void CTSfilterManager::closeRequestSectionFilter(unsigned int pid)
     }
 }
 
+#if 0
 void CTSfilterManager::closeTSFilterMgr(void)
 {
     if(inst == nullptr)
@@ -164,3 +165,4 @@ void CTSfilterManager::closeTSFilterMgr(void)
 
     delete inst;
 }
+#endif
