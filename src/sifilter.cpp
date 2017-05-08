@@ -89,6 +89,7 @@ CTSfilterManager::~CTSfilterManager()
     DEBUG_PRINT(DebugLevel4SifilerManager::DEBUG_LEVEL_TRACE, "");
 }
 
+#if 1
 CTSfilterManager* CTSfilterManager::inst = nullptr;
 CTSfilterManager* CTSfilterManager::getInstance(void)
 {
@@ -100,6 +101,19 @@ CTSfilterManager* CTSfilterManager::getInstance(void)
     DEBUG_PRINT(DebugLevel4SifilerManager::DEBUG_LEVEL_TRACE, "");
     return inst;
 }
+#else
+std::shared_ptr<CTSfilterManager> CTSfilterManager::inst = nullptr;
+std::shared_ptr<CTSfilterManager> CTSfilterManager::getInstance(void)
+{
+    if(inst == nullptr)
+    {
+        inst.reset(new CTSfilterManager);
+    }
+
+    DEBUG_PRINT(DebugLevel4SifilerManager::DEBUG_LEVEL_TRACE, "");
+    return inst;
+}
+#endif
 
 //void CTSfilterManager::startReceiveBuffer(unsigned char *buffer, size_t num)
 void CTSfilterManager::startReceiveBuffer(char *buffer, size_t num)

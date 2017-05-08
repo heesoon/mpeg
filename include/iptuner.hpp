@@ -47,7 +47,6 @@ public  :
 
 public  :
     CIPTuner();
-    CIPTuner(boost::asio::io_service &io);
     virtual ~CIPTuner();
     virtual bool startTune(std::string addr, unsigned short port);
     virtual bool stopTune(void);

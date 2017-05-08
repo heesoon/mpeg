@@ -157,14 +157,13 @@ bool CIPTuner::stopTune(void)
 {
     DEBUG_PRINT(DebugLevel4IPTuner::DEBUG_LEVEL_TRACE, "");
 
-    boost::asio::ip::address multicast_address = boost::asio::ip::address::from_string(addr_);
-
     if(!receiveTrId)
     {
         DEBUG_PRINT(DebugLevel4IPTuner::DEBUG_LEVEL_ERROR, "Task is Null");
         return false;
     }
 
+    boost::asio::ip::address multicast_address = boost::asio::ip::address::from_string(addr_);
     socket.set_option(boost::asio::ip::multicast::leave_group(multicast_address));
     socket.close();
 
