@@ -27,7 +27,7 @@ set(CXX_DEBUG_FLAGS "-g")
 
 add_definitions(-std=c++11 -g -pthread)
 
-#link_directories(${CMAKE_SOURCE_DIR}/libs)
+link_directories(${CMAKE_SOURCE_DIR}/libs)
 
 set(LIB_LIST
 	pthread
