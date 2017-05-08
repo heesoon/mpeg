@@ -34,7 +34,7 @@ enum class DebugLevel4SifilerManager
     DEBUG_LEVEL_MAX
 };
 
-DebugLevel4SifilerManager gDebugLevel = DebugLevel4SifilerManager::DEBUG_LEVEL_TRACE;
+static DebugLevel4SifilerManager gDebugLevel = DebugLevel4SifilerManager::DEBUG_LEVEL_TRACE;
 
 #define DEBUG_PRINT(debugPrint, debugMsg)\
 {\

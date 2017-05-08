@@ -32,6 +32,7 @@ set(DEPENDENT_LIBRARY_LIST
 # set source files built
 set(SRCS
 	${CMAKE_SOURCE_DIR}/src/sifilter.cpp
+	${CMAKE_SOURCE_DIR}/src/iptuner.cpp
 )
 
 # install header files

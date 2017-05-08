@@ -12,6 +12,6 @@ if(TEST_FILTER)
 add_subdirectory(filter)
 endif()
 
-if(TEST_FILTER)
+if(TEST_IPTUNER)
 add_subdirectory(iptuner)
 endif()

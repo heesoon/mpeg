@@ -1,12 +1,12 @@
 set(BIN_NAME iptuner)
 
 set(SRC_LIST
-  ${CMAKE_SOURCE_DIR}/test/iptuner/iptuner.cpp
+  ${CMAKE_SOURCE_DIR}/test/iptuner/main.cpp
 )
 
 # add include files 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-#  ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_SOURCE_DIR}/include
 )
 
 # find requred packagesa
@@ -15,7 +15,7 @@ find_package(Threads)
 set(Boost_USE_STATIC_LIBS   ON)
 set(Boost_USE_MULTITHREADED ON)
 
-find_package(Boost COMPONENTS system filesystem REQUIRED REQUIRED)
+find_package(Boost COMPONENTS system thread timer chrono filesystem REQUIRED REQUIRED)
 if (Boost_FOUND)
 	include_directories(${Boost_INCLUDE_DIRS})
 	link_directories(${Boost_LIBRARY_DIRS})
@@ -27,10 +27,12 @@ set(CXX_DEBUG_FLAGS "-g")
 
 add_definitions(-std=c++11 -g -pthread)
 
+#link_directories(${CMAKE_SOURCE_DIR}/libs)
+
 set(LIB_LIST
-  pthread
-  ${Boost_LIBRARIES}
-#  ${CMAKE_THREAD_LIBS_INIT}
+	pthread
+	mpeg
+	${Boost_LIBRARIES}
 )
 
 add_executable(${BIN_NAME} ${SRC_LIST})
