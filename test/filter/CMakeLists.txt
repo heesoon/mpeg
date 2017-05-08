@@ -15,7 +15,7 @@ find_package(Threads)
 set(Boost_USE_STATIC_LIBS   ON)
 set(Boost_USE_MULTITHREADED ON)
 
-find_package(Boost COMPONENTS system filesystem REQUIRED REQUIRED)
+find_package(Boost COMPONENTS system thread filesystem REQUIRED REQUIRED)
 if (Boost_FOUND)
 	include_directories(${Boost_INCLUDE_DIRS})
 	link_directories(${Boost_LIBRARY_DIRS})
