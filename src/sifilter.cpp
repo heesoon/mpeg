@@ -131,6 +131,7 @@ void CTSfilterManager::startReceiveBuffer(char *buffer, size_t num)
 
 void CTSfilterManager::requestSectionFilter(std::string filterName, unsigned int pid, callBackType pCallBack)
 {
+    DEBUG_PRINT(DebugLevel4SifilerManager::DEBUG_LEVEL_TRACE, "");
     CTSfilter *filter;
 
     filter = new CTSfilter();
@@ -140,6 +141,7 @@ void CTSfilterManager::requestSectionFilter(std::string filterName, unsigned int
     filter->filterName  = filterName;
 
     filterMgr.push_back(filter);
+    DEBUG_PRINT(DebugLevel4SifilerManager::DEBUG_LEVEL_TRACE, "");
 }
 
 void CTSfilterManager::closeRequestSectionFilter(unsigned int pid)
