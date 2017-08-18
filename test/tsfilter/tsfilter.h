@@ -23,7 +23,53 @@ For more information, please refer to <http://unlicense.org>
 
 #ifndef __TS_FILTER_H__
 #define __TS_FILTER_H__
-class tsfilter {
 
+#include <fstream>
+#include <memory>
+
+enum class MediaType {
+	MEDIA_TYPE_FILE,
+	MEDIA_TYPE_IP,
+	MEDIA_TYPE_MAX
 };
+
+class CTsFilter {
+public:
+	virtual void openMedia() = 0;
+	virtual void readMedia() = 0;
+	virtual void closeMedia() = 0;
+	//virtual ~CTsFilter();
+};
+
+class CTsFilter4File : public CTsFilter {
+public:
+	CTsFilter4File() = default;
+	virtual void openMedia() override;
+	virtual void readMedia() override;
+	virtual void closeMedia() override;
+	virtual ~CTsFilter4File();
+private:
+	std::ifstream ifs;
+};
+
+class CTsFilter4IP : public CTsFilter {
+public:
+	CTsFilter4IP() = default;
+	virtual void openMedia() override;
+	virtual void readMedia() override;
+	virtual void closeMedia() override;
+	virtual ~CTsFilter4IP();	
+};
+
+#if 0
+class CTsFilterFactory {
+public:
+	static CTsFilter* createNewTsFilter(const MediaType& type);
+};
+#else
+class CTsFilterFactory {
+public:
+	static std::unique_ptr<CTsFilter> createNewTsFilter(const MediaType& type);
+};
+#endif
 #endif
