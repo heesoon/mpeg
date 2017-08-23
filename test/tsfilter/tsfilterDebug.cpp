@@ -31,7 +31,7 @@ For more information, please refer to <http://unlicense.org>
 #include <tuple>
 
 #include "tsfilterDebug.h"
-#include "tsfilter.h"
+#include "tsreader.h"
 
 // implementation of debug functions
 namespace debug_tsfilterDebug {
@@ -76,14 +76,14 @@ namespace debug_tsfilterDebug {
 
 	void debug_tsfilter_file() {
 
-		std::unique_ptr<CTsFilter> up = CTsFilterFactory::createNewTsFilter(MediaType::MEDIA_TYPE_FILE);
+		std::unique_ptr<CTsReader> up = CTsReaderFactory::createNewTsReader(MediaType::MEDIA_TYPE_FILE);
 		up->openMedia();
 		up->readMedia();
 		up->closeMedia();
 	}
 
 	void debug_tsfilter_ip() {
-		std::unique_ptr<CTsFilter> up = CTsFilterFactory::createNewTsFilter(MediaType::MEDIA_TYPE_IP);
+		std::unique_ptr<CTsReader> up = CTsReaderFactory::createNewTsReader(MediaType::MEDIA_TYPE_IP);
 		up->openMedia();
 		up->readMedia();
 		up->closeMedia();

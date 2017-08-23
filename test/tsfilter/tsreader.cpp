@@ -21,10 +21,10 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <http://unlicense.org>
 */
 #include <iostream>
-#include "tsfilter.h"
+#include "tsreader.h"
 
-// implementation for CTsFilter4File
-void CTsFilter4File::openMedia() {
+// implementation for CTsReader4File
+void CTsReader4File::openMedia() {
 	std::string fpath;
 
 	std::cout << "enter ts file path : ";
@@ -44,7 +44,7 @@ void CTsFilter4File::openMedia() {
 	std::cout << "Success file open.." << std::endl;
 }
 
-void CTsFilter4File::readMedia() {
+void CTsReader4File::readMedia() {
 	char *buffer = new char[188];
 	while(!ifs.eof()) {
 		ifs.read(buffer, 188);
@@ -53,48 +53,48 @@ void CTsFilter4File::readMedia() {
 	delete [] buffer;
 }
 
-void CTsFilter4File::closeMedia() {
+void CTsReader4File::closeMedia() {
 	ifs.close();
 }
 
-CTsFilter4File::~CTsFilter4File() {
+CTsReader4File::~CTsReader4File() {
 	std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;
 	closeMedia();
 }
 
-// implementation for CTsFilter4IP
-void CTsFilter4IP::openMedia() {
+// implementation for CTsReader4IP
+void CTsReader4IP::openMedia() {
 	// TODO.
 }
 
-void CTsFilter4IP::readMedia() {
+void CTsReader4IP::readMedia() {
 	// TODO.
 }
 
-void CTsFilter4IP::closeMedia() {
+void CTsReader4IP::closeMedia() {
 	// TODO.
 }
 
-CTsFilter4IP::~CTsFilter4IP() {
+CTsReader4IP::~CTsReader4IP() {
 	std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;	
 }
 
-// implementation for CTsFilter Factory
+// implementation for CTsReader4 Factory
 #if 0
-CTsFilter* CTsFilterFactory::createNewTsFilter(const MediaType& type) {
+CTsReader* CTsReaderFactory::createNewTsReader(const MediaType& type) {
 	if(type == MediaType::MEDIA_TYPE_FILE)
-		return new CTsFilter4File;
+		return new CTsReader4File;
 	if(type == MediaType::MEDIA_TYPE_IP)
-		return new CTsFilter4IP;
+		return new CTsReader4IP;
 
 	return nullptr;
 }
 #else
-std::unique_ptr<CTsFilter> CTsFilterFactory::createNewTsFilter(const MediaType& type) {
+std::unique_ptr<CTsReader> CTsReaderFactory::createNewTsReader(const MediaType& type) {
 	if(type == MediaType::MEDIA_TYPE_FILE)
-		return std::make_unique<CTsFilter4File>();
+		return std::make_unique<CTsReader4File>();
 	if(type == MediaType::MEDIA_TYPE_IP)
-		return std::make_unique<CTsFilter4IP>();
+		return std::make_unique<CTsReader4IP>();
 
 	return nullptr;
 }
