@@ -3,6 +3,8 @@ set(BIN_NAME tsfilter)
 set(SRC_LIST
 	${CMAKE_SOURCE_DIR}/tsfilterDebug.cpp
 	${CMAKE_SOURCE_DIR}/tsreader.cpp
+	${CMAKE_SOURCE_DIR}/pat.cpp
+	${CMAKE_SOURCE_DIR}/tsfilterManager.cpp
   	${CMAKE_SOURCE_DIR}/main.cpp
 )
 

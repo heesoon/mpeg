@@ -21,59 +21,15 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <http://unlicense.org>
 */
 
-#ifndef __TS_READER_H__
-#define __TS_READER_H__
+#ifndef __PAT_H__
+#define __PAT_H__
 
-#include <fstream>
-#include <memory>
+#include "tsAbstractTsfilter.h"
 
-#include "tsfilterManager.h"
-
-enum class MediaType {
-	MEDIA_TYPE_FILE,
-	MEDIA_TYPE_IP,
-	MEDIA_TYPE_MAX
-};
-
-class CTsReader {
+class CPat : public CTsFilter {
 public:
-	virtual void openMedia() = 0;
-	virtual void readMedia() = 0;
-	virtual void closeMedia() = 0;
-	virtual ~CTsReader(){};
+	CPat() = default;
+	virtual void parsing(const char *buff) override;
+	virtual ~CPat();
 };
-
-class CTsReader4File : public CTsReader {
-public:
-	CTsReader4File() = default;
-	virtual void openMedia() override;
-	virtual void readMedia() override;
-	virtual void closeMedia() override;
-	virtual ~CTsReader4File();
-private:
-	std::ifstream ifs;
-	//CTsFilterManager *filterMgr;
-	std::unique_ptr<CTsFilterManager> upFilterMgr;
-};
-
-class CTsReader4IP : public CTsReader {
-public:
-	CTsReader4IP() = default;
-	virtual void openMedia() override;
-	virtual void readMedia() override;
-	virtual void closeMedia() override;
-	virtual ~CTsReader4IP();	
-};
-
-#if 0
-class CTsReaderFactory {
-public:
-	static CTsReader* createNewTsReader(const MediaType& type);
-};
-#else
-class CTsReaderFactory {
-public:
-	static std::unique_ptr<CTsReader> createNewTsReader(const MediaType& type);
-};
-#endif
 #endif

@@ -41,6 +41,10 @@ void CTsReader4File::openMedia() {
 		return;
 	}
 
+	//filterMgr = new CTsFilterManager;
+	upFilterMgr = std::make_unique<CTsFilterManager>();
+	upFilterMgr->onInit();
+	
 	std::cout << "Success file open.." << std::endl;
 }
 
@@ -48,13 +52,14 @@ void CTsReader4File::readMedia() {
 	char *buffer = new char[188];
 	while(!ifs.eof()) {
 		ifs.read(buffer, 188);
-		//std::printf("%x ", buffer[0]);
+		upFilterMgr->dispatchPidAndSection(buffer);
 	}
 	delete [] buffer;
 }
 
 void CTsReader4File::closeMedia() {
 	ifs.close();
+	//delete filterMgr;
 }
 
 CTsReader4File::~CTsReader4File() {

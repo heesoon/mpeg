@@ -21,59 +21,26 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <http://unlicense.org>
 */
 
-#ifndef __TS_READER_H__
-#define __TS_READER_H__
+#ifndef __TS_FILTER__MANAGER_H__
+#define __TS_FILTER__MANAGER_H__
 
-#include <fstream>
+#include <unordered_map>
 #include <memory>
+#include "pat.h"
 
-#include "tsfilterManager.h"
-
-enum class MediaType {
-	MEDIA_TYPE_FILE,
-	MEDIA_TYPE_IP,
-	MEDIA_TYPE_MAX
+enum class SectionFilterType {
+	PAT,
+	PMT,
+	MAX
 };
 
-class CTsReader {
+class CTsFilterManager {
 public:
-	virtual void openMedia() = 0;
-	virtual void readMedia() = 0;
-	virtual void closeMedia() = 0;
-	virtual ~CTsReader(){};
-};
-
-class CTsReader4File : public CTsReader {
-public:
-	CTsReader4File() = default;
-	virtual void openMedia() override;
-	virtual void readMedia() override;
-	virtual void closeMedia() override;
-	virtual ~CTsReader4File();
+	void onInit();
+	void registerSectionFilter(uint32_t pid, const SectionFilterType& type);
+	void dispatchPidAndSection(const char *buff);
+	virtual ~CTsFilterManager();
 private:
-	std::ifstream ifs;
-	//CTsFilterManager *filterMgr;
-	std::unique_ptr<CTsFilterManager> upFilterMgr;
+	std::unordered_map<uint32_t, std::shared_ptr<CTsFilter>> um;
 };
-
-class CTsReader4IP : public CTsReader {
-public:
-	CTsReader4IP() = default;
-	virtual void openMedia() override;
-	virtual void readMedia() override;
-	virtual void closeMedia() override;
-	virtual ~CTsReader4IP();	
-};
-
-#if 0
-class CTsReaderFactory {
-public:
-	static CTsReader* createNewTsReader(const MediaType& type);
-};
-#else
-class CTsReaderFactory {
-public:
-	static std::unique_ptr<CTsReader> createNewTsReader(const MediaType& type);
-};
-#endif
 #endif
