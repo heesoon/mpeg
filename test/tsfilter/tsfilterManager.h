@@ -26,21 +26,19 @@ For more information, please refer to <http://unlicense.org>
 
 #include <unordered_map>
 #include <memory>
+#include <thread>
 #include "pat.h"
-
-enum class SectionFilterType {
-	PAT,
-	PMT,
-	MAX
-};
 
 class CTsFilterManager {
 public:
 	void onInit();
-	void registerSectionFilter(uint32_t pid, const SectionFilterType& type);
-	void dispatchPidAndSection(const char *buff);
+	void attachSectionFilter(uint32_t pid, const SectionFilterType& type);
+	void eventHandler();
+	void dispatchPidAndSection(UINT8 *buff);
 	virtual ~CTsFilterManager();
 private:
+	bool inLoop;
+	std::thread t;
 	std::unordered_map<uint32_t, std::shared_ptr<CTsFilter>> um;
 };
 #endif

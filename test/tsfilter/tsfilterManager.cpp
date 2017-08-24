@@ -24,13 +24,20 @@ For more information, please refer to <http://unlicense.org>
 #include "tsfilterManager.h"
 
 void CTsFilterManager::onInit() {
-	registerSectionFilter(0, SectionFilterType::PAT);
+	inLoop = true;
+	attachSectionFilter(0, SectionFilterType::PAT);
+
+	t = std::thread([&]() {
+		while(inLoop) {
+			eventHandler();
+		}
+	});
 }
 
-void CTsFilterManager::registerSectionFilter(uint32_t pid, const SectionFilterType& type) {
+void CTsFilterManager::attachSectionFilter(uint32_t pid, const SectionFilterType& type) {
 	switch(type) {
 		case SectionFilterType::PAT:
-			um.emplace(std::make_pair(pid, std::make_shared<CPat>()));
+			um.emplace(std::make_pair(pid, std::make_shared<CPAT>(type)));
 			break;
 		case SectionFilterType::PMT:
 			break;
@@ -39,7 +46,7 @@ void CTsFilterManager::registerSectionFilter(uint32_t pid, const SectionFilterTy
 	}
 }
 
-void CTsFilterManager::dispatchPidAndSection(const char *buff) {
+void CTsFilterManager::dispatchPidAndSection(UINT8 *buff) {
 	uint32_t pid;
 
 	if(buff[0] != 0x47) {
@@ -52,10 +59,65 @@ void CTsFilterManager::dispatchPidAndSection(const char *buff) {
 	auto search = um.find(pid);
 	if(search != um.end()) {
 		std::cout << "pid found ..." << std::endl;
-		search->second->parsing(buff);
+		search->second->parsing(buff+4);
+	}
+}
+
+void CTsFilterManager::eventHandler() {
+	for(auto u : um) {
+		switch(u.second->getFilterStatus()) {
+			case FilterStatus::FILTER_INITED:
+			{
+				// TODO.
+			}
+			break;
+			case FilterStatus::FILTER_STARTED:
+			{
+				// TODO.
+			}
+			break;
+			case FilterStatus::FILTER_PARSING:
+			{
+				// TODO.
+			}
+			break;
+			case FilterStatus::FILTER_PARSING_DONE:
+			{
+				switch(u.second->getSectionFilterType()) {
+					case SectionFilterType::PAT:
+					{
+						// attach PMT filter
+						//uint32_t nums 	= static_cast<CPat*>(u.second.get())->getPatProgNum();
+						//uint32_t *pids 	= static_cast<CPat*>(u.second.get())->getPmtPids();
+
+						//for(uint32_t i = 0; i < nums; i++) {
+						//	attachSectionFilter(pids[i], SectionFilterType::PMT);
+						//}
+					}
+					break;
+					case SectionFilterType::PMT:
+					{
+						// TODO.
+					}
+					break;
+					default:
+					break;					
+				}
+			}
+			break;
+			case FilterStatus::FILTER_VERSION_UP:
+			{
+				// TODO.
+			}
+			break;
+			default:
+			break;																
+		}
 	}
 }
 
 CTsFilterManager::~CTsFilterManager() {
 	std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;
+	inLoop = false;
+	t.join();
 }

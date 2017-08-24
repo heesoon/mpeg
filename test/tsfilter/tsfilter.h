@@ -24,4 +24,41 @@ For more information, please refer to <http://unlicense.org>
 #ifndef __TS_FILTER_H__
 #define __TS_FILTER_H__
 
+#include "glob_types.h"
+
+enum class SectionFilterType {
+	PAT,
+	PMT,
+	MAX
+};
+
+enum class FilterStatus {
+	FILTER_INITED,
+	FILTER_STARTED,
+	FILTER_PARSING,
+	FILTER_PARSING_DONE,
+	FILTER_VERSION_UP,
+	FILTER_MAX
+};
+
+class CTsFilter {
+public:
+#if 0	
+	virtual void setFilterStatus(const FilterStatus& stat) = 0;
+	virtual const FilterStatus& getFilterStatus() = 0;
+	virtual void notify(const FilterStatus& stat) = 0;
+	virtual void setSectionFilterType(const SectionFilterType& stat) = 0;
+	virtual const SectionFilterType& getSectionFilterType() = 0;	
+	virtual void parsing(const char *pbuff) = 0;
+#endif
+	virtual void setFilterStatus(const FilterStatus& stat);
+	virtual const FilterStatus& getFilterStatus();
+	virtual void setSectionFilterType(const SectionFilterType& stat);
+	virtual const SectionFilterType& getSectionFilterType();	
+	virtual void notify(const FilterStatus& stat) = 0;
+	virtual void parsing(UINT8 *pData) = 0;
+protected:
+	SectionFilterType type;
+	FilterStatus status;
+};
 #endif

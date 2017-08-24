@@ -24,12 +24,37 @@ For more information, please refer to <http://unlicense.org>
 #ifndef __PAT_H__
 #define __PAT_H__
 
-#include "tsAbstractTsfilter.h"
+#include <vector>
+#include "tsfilter.h"
 
-class CPat : public CTsFilter {
+struct PROGRAM_T {
+	UINT8  section_number;
+	UINT16 program_number;
+	UINT16 pmtPid;
+	UINT8* pRawData;
+};
+
+class CPAT : public CTsFilter {
 public:
-	CPat() = default;
+	CPAT();
+	CPAT(const SectionFilterType& t);
+#if 0	
+	virtual void setFilterStatus(const FilterStatus& stat) override;
+	virtual const FilterStatus& getFilterStatus() override;
+	virtual void notify(const FilterStatus& stat) override;
+	virtual void setSectionFilterType(const SectionFilterType& stat) override;
+	virtual const SectionFilterType& getSectionFilterType() override;		
 	virtual void parsing(const char *buff) override;
-	virtual ~CPat();
+#endif
+	virtual std::vector<PROGRAM_T*>& getPATInfo();
+	virtual void notify(const FilterStatus& stat) override;
+	virtual void parsing(UINT8 *pData) override;
+	virtual ~CPAT();
+private:
+	UINT32 numProgs = 0;
+	UINT8 version = 0;
+	UINT8 last_section_number = 0;
+	//std::vector<PROGRAM_T*> v;
+	std::vector<PROGRAM_T> v;
 };
 #endif

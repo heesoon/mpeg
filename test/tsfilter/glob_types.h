@@ -21,10 +21,15 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <http://unlicense.org>
 */
 
-#ifndef __TS_ABSTRACT_TS_FILTER_H__
-#define __TS_ABSTRACT_TS_FILTER_H__
-class CTsFilter {
-public:
-	virtual void parsing(const char *pbuff) = 0;
-};
+#ifndef __GLOBAL_TYPES_H__
+#define __GLOBAL_TYPES_H__
+typedef bool BOOL;
+typedef char SINT8;
+typedef unsigned char UINT8;
+typedef short int SINT16;
+typedef unsigned short UINT16;
+typedef int SINT32;
+typedef unsigned int UINT32;
+typedef long long SINT64;
+typedef unsigned long long UINT64;
 #endif
