@@ -23,7 +23,8 @@ For more information, please refer to <http://unlicense.org>
 #include <iostream>
 #include "pat.h"
 
-#define PRINT_PAT_HEADER_INFO(x) std::printf("%30s = %10d [%#10x]\n", #x, x, x);
+//#define PRINT_PAT_HEADER_INFO(x) std::printf("%30s = %10d [%#10x]\n", #x, x, x);
+#define PRINT_PAT_HEADER_INFO(x)
 #define PAT_HEADER_SIZE 	8
 #define GET_2BYTE(x) 		(((*(x)) << 8)|((*(x+1))))
 #define GET_PID(x) 			((GET_2BYTE(x))&0x1FFF)
@@ -36,39 +37,34 @@ CPAT::CPAT(const SectionFilterType& t) {
 	type = t;
 }
 
-#if 0
-void CPat::setFilterStatus(const FilterStatus& stat) {
-	std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;
-}
-
-const FilterStatus& CPat::getFilterStatus() {
-	std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;
-	return status;	
-}
-
-void CPat::notify(const FilterStatus& stat) {
-	std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;		
-}
-
-void CPat::setSectionFilterType(const SectionFilterType& stat) {
-	std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;
-}
-
-const SectionFilterType& CPat::getSectionFilterType() {
-	std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;
-	return type;
-}
-
-void CPat::parsing(const char *buff) {
-	std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;
-}
-#endif
-std::vector<PROGRAM_T*>& CPAT::getPATInfo() {
+std::vector<PROGRAM_T>& CPAT::getPATInfo() {
 
 }
 
 void CPAT::notify(const FilterStatus& stat) {
-	std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;		
+	
+}
+
+UINT32 CPAT::getNumberOfProgram() {
+	return numProgs;
+}
+
+bool CPAT::isExistSection(UINT8 version, UINT8 section_number) {
+	if(this->version == version) {
+		if( b.test(section_number) == true )  {
+			return true;
+		}
+		else {
+			b.set(section_number);
+			return false;
+		}
+	}
+	else {
+		// version up case check
+		status = FilterStatus::FILTER_VERSION_UP;
+	}
+
+	return false;
 }
 
 void CPAT::parsing(UINT8 *pData) {
@@ -116,32 +112,52 @@ void CPAT::parsing(UINT8 *pData) {
 	last_section_number = pSection[7];
 	PRINT_PAT_HEADER_INFO(last_section_number);
 
-	if(last_section_number == 0) {
-		this->last_section_number = last_section_number;
-
-		pSection = pData + point_field + PAT_HEADER_SIZE + 1;
-		section_length -= PAT_HEADER_SIZE + 1;
-
-		while(section_length >= 4) {
-			program.program_number = GET_2BYTE(pSection);
-			// Ignore NIT 
-			if(program.program_number != 0) {
-				//program.version 		= version_number;
-				program.section_number 	= section_number;
-				program.pmtPid 			= GET_PID(pSection+2);
-
-				v.push_back(program);
-				numProgs++;
-			}
-			pSection += 4;
-			section_length -= 4;
-		}	
+    // filter status update
+	if(status == FilterStatus::FILTER_INITED) {
+		this->version = version_number;
+		status = FilterStatus::FILTER_STARTED;
 	}
-	else {
 
+	if(isExistSection(version_number, section_number) == true) {
+		//std::cout << "it is duplication section ... " << std::endl;
+		return;
+	}
+
+	// filter status update
+	if(status == FilterStatus::FILTER_STARTED) {
+		status = FilterStatus::FILTER_PARSING;
+	}
+
+	this->section_count++;
+
+	pSection = pData + point_field + PAT_HEADER_SIZE + 1;
+	section_length -= PAT_HEADER_SIZE + 1;
+
+	while(section_length >= 4)
+	{
+		program.program_number = GET_2BYTE(pSection);
+		if(program.program_number != 0) // Ignore NIT
+		{
+			program.version 		= version_number;
+			program.section_number 	= section_number;
+			program.pmtPid 			= GET_PID(pSection+2);
+
+			v.push_back(program);
+			numProgs++;
+		}
+		pSection += 4;
+		section_length -= 4;
+	}
+
+	// filter status update
+	if(status == FilterStatus::FILTER_PARSING) {
+		if(this->section_count == this->last_section_number+1) {
+			status = FilterStatus::FILTER_PARSING_DONE;
+		}
 	}
 }
 
 CPAT::~CPAT() {
 	std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;
+	v.clear();
 }

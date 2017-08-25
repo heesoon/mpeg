@@ -28,7 +28,7 @@ void CTsFilter::setFilterStatus(const FilterStatus& stat) {
 }
 
 const FilterStatus& CTsFilter::getFilterStatus() {
-	std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;
+	//std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;
 	return status;	
 }
 
@@ -37,6 +37,6 @@ void CTsFilter::setSectionFilterType(const SectionFilterType& stat) {
 }
 
 const SectionFilterType& CTsFilter::getSectionFilterType() {
-	std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;
+	//std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;
 	return type;
 }

@@ -31,7 +31,8 @@ void CTsReader4File::openMedia() {
 	//std::cin >> fpath;
 	std::getline(std::cin, fpath);
 	if(fpath.empty()) {
-		fpath = "/home/hskim/stream/secureMedia/fantasy_clear.ts";
+		//fpath = "/home/hskim/stream/secureMedia/fantasy_clear.ts";
+		fpath = "/home/hskim/mpeg/test/stream/test.ts";
 	}
 	std::cout << std::endl;
 

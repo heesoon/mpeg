@@ -58,17 +58,31 @@ void CTsFilterManager::dispatchPidAndSection(UINT8 *buff) {
 
 	auto search = um.find(pid);
 	if(search != um.end()) {
-		std::cout << "pid found ..." << std::endl;
 		search->second->parsing(buff+4);
 	}
 }
 
 void CTsFilterManager::eventHandler() {
+	static bool patdone = false;
+
 	for(auto u : um) {
 		switch(u.second->getFilterStatus()) {
 			case FilterStatus::FILTER_INITED:
 			{
-				// TODO.
+				switch(u.second->getSectionFilterType()) {
+					case SectionFilterType::PAT:
+					{
+						// TODO.
+					}
+					break;
+					case SectionFilterType::PMT:
+					{
+						// TODO.
+					}
+					break;
+					default:
+					break;					
+				}
 			}
 			break;
 			case FilterStatus::FILTER_STARTED:
@@ -93,6 +107,16 @@ void CTsFilterManager::eventHandler() {
 						//for(uint32_t i = 0; i < nums; i++) {
 						//	attachSectionFilter(pids[i], SectionFilterType::PMT);
 						//}
+						if(patdone == false)
+						{
+							std::cout << "PAT parsing done .." << std::endl;
+							patdone = true;
+
+							std::vector<PROGRAM_T> vp = static_cast<CPAT*>(u.second.get())->getPATInfo();
+							for(auto p : vp) {
+								std::cout << "section number : " << p.section_number << std::endl;
+							}
+						}
 					}
 					break;
 					case SectionFilterType::PMT:
@@ -107,7 +131,21 @@ void CTsFilterManager::eventHandler() {
 			break;
 			case FilterStatus::FILTER_VERSION_UP:
 			{
-				// TODO.
+				switch(u.second->getSectionFilterType()) {
+					case SectionFilterType::PAT:
+					{
+						std::cout << "PAT table is currently version up .." << std::endl;
+						// TODO.
+					}
+					break;
+					case SectionFilterType::PMT:
+					{
+						// TODO.
+					}
+					break;
+					default:
+					break;					
+				}
 			}
 			break;
 			default:

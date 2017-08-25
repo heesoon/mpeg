@@ -25,36 +25,32 @@ For more information, please refer to <http://unlicense.org>
 #define __PAT_H__
 
 #include <vector>
+#include <bitset>
 #include "tsfilter.h"
 
 struct PROGRAM_T {
+	UINT8  version;
 	UINT8  section_number;
 	UINT16 program_number;
 	UINT16 pmtPid;
-	UINT8* pRawData;
 };
 
 class CPAT : public CTsFilter {
 public:
 	CPAT();
 	CPAT(const SectionFilterType& t);
-#if 0	
-	virtual void setFilterStatus(const FilterStatus& stat) override;
-	virtual const FilterStatus& getFilterStatus() override;
+	virtual UINT32 getNumberOfProgram();
+	virtual std::vector<PROGRAM_T>& getPATInfo();
 	virtual void notify(const FilterStatus& stat) override;
-	virtual void setSectionFilterType(const SectionFilterType& stat) override;
-	virtual const SectionFilterType& getSectionFilterType() override;		
-	virtual void parsing(const char *buff) override;
-#endif
-	virtual std::vector<PROGRAM_T*>& getPATInfo();
-	virtual void notify(const FilterStatus& stat) override;
+	virtual bool isExistSection(UINT8 version, UINT8 section_number);	
 	virtual void parsing(UINT8 *pData) override;
 	virtual ~CPAT();
 private:
 	UINT32 numProgs = 0;
-	UINT8 version = 0;
-	UINT8 last_section_number = 0;
-	//std::vector<PROGRAM_T*> v;
+	UINT8  version = 0xE0;         // lower 5 bit valid
+	UINT8  section_count = 0;
+	UINT8  last_section_number = 0;
+	std::bitset<256> b;
 	std::vector<PROGRAM_T> v;
 };
 #endif
