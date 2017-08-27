@@ -30,15 +30,17 @@ For more information, please refer to <http://unlicense.org>
 #define GET_PID(x) 			((GET_2BYTE(x))&0x1FFF)
 
 CPAT::CPAT() {
+	pMsgQ = CMsgQManager<FilterMessage>::getInstance().getMsgQ(PSI_INFO_MSGS);
 	status = FilterStatus::FILTER_INITED;
 }
 
 CPAT::CPAT(const SectionFilterType& t) {
+	pMsgQ = CMsgQManager<FilterMessage>::getInstance().getMsgQ(PSI_INFO_MSGS);
 	type = t;
 }
 
 std::vector<PROGRAM_T>& CPAT::getPATInfo() {
-
+	return v;
 }
 
 void CPAT::notify(const FilterStatus& stat) {
@@ -142,6 +144,7 @@ void CPAT::parsing(UINT8 *pData) {
 			program.section_number 	= section_number;
 			program.pmtPid 			= GET_PID(pSection+2);
 
+			//std::printf("v [%d], s [%d] \n", version_number, section_number);
 			v.push_back(program);
 			numProgs++;
 		}
@@ -153,6 +156,7 @@ void CPAT::parsing(UINT8 *pData) {
 	if(status == FilterStatus::FILTER_PARSING) {
 		if(this->section_count == this->last_section_number+1) {
 			status = FilterStatus::FILTER_PARSING_DONE;
+			pMsgQ->sendMsg(FilterMessage::PAT_PARSING_DONE);
 		}
 	}
 }

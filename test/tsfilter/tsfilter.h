@@ -25,6 +25,9 @@ For more information, please refer to <http://unlicense.org>
 #define __TS_FILTER_H__
 
 #include "glob_types.h"
+#include "msgQ.h"
+
+#define PSI_INFO_MSGS "PSI_INFO_MSGS"
 
 enum class SectionFilterType {
 	PAT,
@@ -41,19 +44,19 @@ enum class FilterStatus {
 	FILTER_MAX
 };
 
+enum class FilterMessage {
+	PAT_PARSING_DONE,
+	PAT_VERSION_UP,
+	PMT_PARSING_DONE,
+	PMT_VERSION_UP
+};
+
 class CTsFilter {
 public:
-#if 0	
-	virtual void setFilterStatus(const FilterStatus& stat) = 0;
-	virtual const FilterStatus& getFilterStatus() = 0;
-	virtual void notify(const FilterStatus& stat) = 0;
-	virtual void setSectionFilterType(const SectionFilterType& stat) = 0;
-	virtual const SectionFilterType& getSectionFilterType() = 0;	
-	virtual void parsing(const char *pbuff) = 0;
-#endif
+	CTsFilter();
 	virtual void setFilterStatus(const FilterStatus& stat);
-	virtual const FilterStatus& getFilterStatus();
 	virtual void setSectionFilterType(const SectionFilterType& stat);
+	virtual const FilterStatus& getFilterStatus();
 	virtual const SectionFilterType& getSectionFilterType();	
 	virtual void notify(const FilterStatus& stat) = 0;
 	virtual void parsing(UINT8 *pData) = 0;

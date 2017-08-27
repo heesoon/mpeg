@@ -41,8 +41,8 @@ public:
 	CPAT(const SectionFilterType& t);
 	virtual UINT32 getNumberOfProgram();
 	virtual std::vector<PROGRAM_T>& getPATInfo();
+	virtual bool isExistSection(UINT8 version, UINT8 section_number);
 	virtual void notify(const FilterStatus& stat) override;
-	virtual bool isExistSection(UINT8 version, UINT8 section_number);	
 	virtual void parsing(UINT8 *pData) override;
 	virtual ~CPAT();
 private:
@@ -52,5 +52,6 @@ private:
 	UINT8  last_section_number = 0;
 	std::bitset<256> b;
 	std::vector<PROGRAM_T> v;
+	std::shared_ptr<CMsgQ<FilterMessage>> pMsgQ;
 };
 #endif

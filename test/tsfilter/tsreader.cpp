@@ -32,7 +32,8 @@ void CTsReader4File::openMedia() {
 	std::getline(std::cin, fpath);
 	if(fpath.empty()) {
 		//fpath = "/home/hskim/stream/secureMedia/fantasy_clear.ts";
-		fpath = "/home/hskim/mpeg/test/stream/test.ts";
+		//fpath = "/home/hskim/mpeg/test/stream/test.ts";
+		fpath = "../stream/test.ts";
 	}
 	std::cout << std::endl;
 
@@ -44,8 +45,7 @@ void CTsReader4File::openMedia() {
 
 	//filterMgr = new CTsFilterManager;
 	upFilterMgr = std::make_unique<CTsFilterManager>();
-	upFilterMgr->onInit();
-
+	//upFilterMgr->init();
 	std::cout << "Success file open.." << std::endl;
 }
 

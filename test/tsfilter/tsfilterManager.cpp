@@ -21,10 +21,18 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <http://unlicense.org>
 */
 #include <iostream>
+#include <fstream>
 #include "tsfilterManager.h"
 
-void CTsFilterManager::onInit() {
+CTsFilterManager::CTsFilterManager() {
+	init();
+}
+
+void CTsFilterManager::init() {
 	inLoop = true;
+
+	pMsgQ = CMsgQManager<FilterMessage>::getInstance().createMsgQ(PSI_INFO_MSGS);
+
 	attachSectionFilter(0, SectionFilterType::PAT);
 
 	t = std::thread([&]() {
@@ -32,6 +40,8 @@ void CTsFilterManager::onInit() {
 			eventHandler();
 		}
 	});
+
+	t.detach();
 }
 
 void CTsFilterManager::attachSectionFilter(uint32_t pid, const SectionFilterType& type) {
@@ -43,6 +53,15 @@ void CTsFilterManager::attachSectionFilter(uint32_t pid, const SectionFilterType
 			break;
 		default:
 			break;
+	}
+}
+
+void CTsFilterManager::detachSectionFilter(const SectionFilterType& type) {
+	for(auto it = um.begin(); it !=um.end();) {
+		if(it->second->getSectionFilterType() == type)
+			it = um.erase(it);
+		else
+			++it;
 	}
 }
 
@@ -63,99 +82,38 @@ void CTsFilterManager::dispatchPidAndSection(UINT8 *buff) {
 }
 
 void CTsFilterManager::eventHandler() {
-	static bool patdone = false;
+	FilterMessage msg = pMsgQ->receiveMsg();
+	switch(msg) {
+		case FilterMessage::PAT_PARSING_DONE:
+		{
+			std::cout << "PAT Parsing Done ..." << std::endl;
+			auto pat = um.find(0);
+			if(pat != um.end()) {
+				std::ofstream ofs ("pat_result.txt");
 
-	for(auto u : um) {
-		switch(u.second->getFilterStatus()) {
-			case FilterStatus::FILTER_INITED:
-			{
-				switch(u.second->getSectionFilterType()) {
-					case SectionFilterType::PAT:
-					{
-						// TODO.
-					}
-					break;
-					case SectionFilterType::PMT:
-					{
-						// TODO.
-					}
-					break;
-					default:
-					break;					
+				UINT32 i = 1;
+				std::vector<PROGRAM_T>& progs = static_cast<CPAT*>(pat->second.get())->getPATInfo();
+				
+				for(auto& p : progs) {
+					ofs << "index : " << i++ << std::endl;
+					ofs << "version : " << p.version << std::endl;
+					ofs << "section_number : " << p.section_number << std::endl;
+					ofs << "program_number : " << p.program_number << std::endl;
+					ofs << "pmtPid : " << p.pmtPid << std::endl;
 				}
+				ofs.close();
 			}
-			break;
-			case FilterStatus::FILTER_STARTED:
-			{
-				// TODO.
-			}
-			break;
-			case FilterStatus::FILTER_PARSING:
-			{
-				// TODO.
-			}
-			break;
-			case FilterStatus::FILTER_PARSING_DONE:
-			{
-				switch(u.second->getSectionFilterType()) {
-					case SectionFilterType::PAT:
-					{
-						// attach PMT filter
-						//uint32_t nums 	= static_cast<CPat*>(u.second.get())->getPatProgNum();
-						//uint32_t *pids 	= static_cast<CPat*>(u.second.get())->getPmtPids();
-
-						//for(uint32_t i = 0; i < nums; i++) {
-						//	attachSectionFilter(pids[i], SectionFilterType::PMT);
-						//}
-						if(patdone == false)
-						{
-							std::cout << "PAT parsing done .." << std::endl;
-							patdone = true;
-
-							std::vector<PROGRAM_T> vp = static_cast<CPAT*>(u.second.get())->getPATInfo();
-							for(auto p : vp) {
-								std::cout << "section number : " << p.section_number << std::endl;
-							}
-						}
-					}
-					break;
-					case SectionFilterType::PMT:
-					{
-						// TODO.
-					}
-					break;
-					default:
-					break;					
-				}
-			}
-			break;
-			case FilterStatus::FILTER_VERSION_UP:
-			{
-				switch(u.second->getSectionFilterType()) {
-					case SectionFilterType::PAT:
-					{
-						std::cout << "PAT table is currently version up .." << std::endl;
-						// TODO.
-					}
-					break;
-					case SectionFilterType::PMT:
-					{
-						// TODO.
-					}
-					break;
-					default:
-					break;					
-				}
-			}
-			break;
-			default:
-			break;																
 		}
+		break;
+		case FilterMessage::PMT_PARSING_DONE:
+			// TODO.
+		break;		
+		default:
+		break;
 	}
 }
 
 CTsFilterManager::~CTsFilterManager() {
 	std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;
 	inLoop = false;
-	t.join();
 }

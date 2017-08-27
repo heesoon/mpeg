@@ -31,14 +31,17 @@ For more information, please refer to <http://unlicense.org>
 
 class CTsFilterManager {
 public:
-	void onInit();
+	CTsFilterManager();
+	void init();
 	void attachSectionFilter(uint32_t pid, const SectionFilterType& type);
+	void detachSectionFilter(const SectionFilterType& type);
 	void eventHandler();
 	void dispatchPidAndSection(UINT8 *buff);
 	virtual ~CTsFilterManager();
 private:
 	bool inLoop;
 	std::thread t;
+	std::shared_ptr<CMsgQ<FilterMessage>> pMsgQ;
 	std::unordered_map<uint32_t, std::shared_ptr<CTsFilter>> um;
 };
 #endif
