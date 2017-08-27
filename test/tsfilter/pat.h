@@ -27,6 +27,7 @@ For more information, please refer to <http://unlicense.org>
 #include <vector>
 #include <bitset>
 #include "tsfilter.h"
+#include "json_spirit.h"
 
 struct PROGRAM_T {
 	UINT8  version;
@@ -41,6 +42,7 @@ public:
 	CPAT(const SectionFilterType& t);
 	virtual UINT32 getNumberOfProgram();
 	virtual std::vector<PROGRAM_T>& getPATInfo();
+	virtual void savePatToJson();
 	virtual bool isExistSection(UINT8 version, UINT8 section_number);
 	virtual void notify(const FilterStatus& stat) override;
 	virtual void parsing(UINT8 *pData) override;

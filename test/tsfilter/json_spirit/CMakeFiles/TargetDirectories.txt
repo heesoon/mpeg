@@ -1,0 +1,3 @@
+/home/hskim/mpeg/test/tsfilter/json_spirit/CMakeFiles/edit_cache.dir
+/home/hskim/mpeg/test/tsfilter/json_spirit/CMakeFiles/rebuild_cache.dir
+/home/hskim/mpeg/test/tsfilter/json_spirit/CMakeFiles/json_spirit.dir

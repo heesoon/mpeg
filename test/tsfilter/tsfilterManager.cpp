@@ -87,6 +87,8 @@ void CTsFilterManager::eventHandler() {
 		case FilterMessage::PAT_PARSING_DONE:
 		{
 			std::cout << "PAT Parsing Done ..." << std::endl;
+
+#if 0			
 			auto pat = um.find(0);
 			if(pat != um.end()) {
 				std::ofstream ofs ("pat_result.txt");
@@ -103,6 +105,11 @@ void CTsFilterManager::eventHandler() {
 				}
 				ofs.close();
 			}
+#endif	
+			auto pat = um.find(0);
+			if(pat != um.end()) {
+				static_cast<CPAT*>(pat->second.get())->savePatToJson();
+			}		
 		}
 		break;
 		case FilterMessage::PMT_PARSING_DONE:

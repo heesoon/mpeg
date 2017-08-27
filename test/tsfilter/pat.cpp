@@ -21,6 +21,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <http://unlicense.org>
 */
 #include <iostream>
+#include <fstream>
 #include "pat.h"
 
 //#define PRINT_PAT_HEADER_INFO(x) std::printf("%30s = %10d [%#10x]\n", #x, x, x);
@@ -41,6 +42,32 @@ CPAT::CPAT(const SectionFilterType& t) {
 
 std::vector<PROGRAM_T>& CPAT::getPATInfo() {
 	return v;
+}
+
+void CPAT::savePatToJson() {
+	std::ofstream os("result/pat_result.txt");
+
+	json_spirit::Array arr;
+
+	// sort by porgram number
+	//v.sort([](PROGRAM_T& prog1, PROGRAM_T& prog2) 
+	//				-> bool { return prog1.program_number < prog2.program_number; });
+
+	for(auto program : v)
+	{
+		json_spirit::Object obj;
+
+		obj.push_back(json_spirit::Pair("version", program.version));
+		obj.push_back(json_spirit::Pair("section_number", program.section_number));
+		obj.push_back(json_spirit::Pair("program_number", program.program_number));
+		obj.push_back(json_spirit::Pair("pmtPid", program.pmtPid));
+
+		arr.push_back(obj);
+	}
+
+	json_spirit::write_formatted(arr, os);
+
+	os.close();	
 }
 
 void CPAT::notify(const FilterStatus& stat) {

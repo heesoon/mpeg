@@ -11,7 +11,7 @@ set(SRC_LIST
 
 # add include files 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-#  ${PROJECT_SOURCE_DIR}/include
+					${CMAKE_CURRENT_SOURCE_DIR}/json_spirit
 )
 
 # find requred packagesa
@@ -35,10 +35,13 @@ add_definitions(-std=c++1z -g -pthread)
 
 # set library search path
 #link_directories(${CMAKE_SOURCE_DIR}/libs)
+link_directories(${CMAKE_SOURCE_DIR} 
+				${CMAKE_SOURCE_DIR}/json_spirit
+)
 
 set(LIB_LIST
   	pthread
-#  	mpeg
+  	json_spirit
 	${Boost_LIBRARIES}
   	${CMAKE_THREAD_LIBS_INIT}
 )
