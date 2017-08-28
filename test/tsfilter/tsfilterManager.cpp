@@ -75,7 +75,6 @@ void CTsFilterManager::dispatchPidAndSection(UINT8 *buff) {
 	}
 
 	pid = ((buff[1] & 0x1f) << 8) | buff[2];
-
 	auto search = um.find(pid);
 	if(search != um.end()) {
 		search->second->parsing(buff+4);

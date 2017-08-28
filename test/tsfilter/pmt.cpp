@@ -28,16 +28,19 @@ For more information, please refer to <http://unlicense.org>
 CPMT::CPMT() : pmtPid(0) {
 	pMsgQ = CMsgQManager<FilterMessage>::getInstance().getMsgQ(PSI_INFO_MSGS);
 	status = FilterStatus::FILTER_INITED;
+	b.reset();
 }
 
 CPMT::CPMT(const SectionFilterType& t) : pmtPid(0) {
 	pMsgQ = CMsgQManager<FilterMessage>::getInstance().getMsgQ(PSI_INFO_MSGS);
 	type = t;
+	b.reset();
 }
 
 CPMT::CPMT(const UINT16& pmtPid, const SectionFilterType& t) : pmtPid(pmtPid) {
 	pMsgQ = CMsgQManager<FilterMessage>::getInstance().getMsgQ(PSI_INFO_MSGS);
-	type = t;	
+	type = t;
+	b.reset();
 }
 
 UINT32 CPMT::getPMTProgNum(void)
@@ -96,7 +99,7 @@ void CPMT::savePmtToJson(void)
 	//				-> bool { return prog1.program_number < prog2.program_number; });
 
 	//std::ofstream os("/Users/hskim/Sites/mpeg/pmt_json.txt");
-	std::ofstream os("result/pmt_json.txt");
+	std::ofstream os("result/pmt_json.txt", std::ofstream::app);
 
 	json_spirit::Array pmtArr;
 
@@ -131,7 +134,6 @@ void CPMT::savePmtToJson(void)
 }
 
 bool CPMT::isExistSection(UINT8 version, UINT8 section_number, UINT16 program_number) {
-	std::printf("pmtPid = %d, section = %d program_number = %d (%d) \n", pmtPid, section_number, program_number, this->program_number);
 	if(this->program_number != program_number) {
 		std::cout << "program number mismatch ..." << std::endl;
 	}
@@ -224,7 +226,7 @@ void CPMT::parsing(UINT8 *pData) {
 
 	if(isExistSection(version_number, section_number, program_number) == true)
 	{
-		//std::cout << "it is duplication section ... " << std::endl;
+		std::cout << "it is duplication section ... " << std::endl;
 		return;
 	}
 
@@ -296,6 +298,7 @@ void CPMT::parsing(UINT8 *pData) {
 			status = FilterStatus::FILTER_PARSING_DONE;
 			pMsgQ->sendMsg(FilterMessage::PMT_PARSING_DONE);
 			printPMTList();
+			savePmtToJson();
 		}
 	}
 }
