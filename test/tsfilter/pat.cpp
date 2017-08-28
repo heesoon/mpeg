@@ -31,14 +31,19 @@ For more information, please refer to <http://unlicense.org>
 #define GET_2BYTE(x) 		(((*(x)) << 8)|((*(x+1))))
 #define GET_PID(x) 			((GET_2BYTE(x))&0x1FFF)
 
-CPAT::CPAT() {
+CPAT::CPAT() : pmtPid(0) {
 	pMsgQ = CMsgQManager<FilterMessage>::getInstance().getMsgQ(PSI_INFO_MSGS);
 	status = FilterStatus::FILTER_INITED;
 }
 
-CPAT::CPAT(const SectionFilterType& t) {
+CPAT::CPAT(const SectionFilterType& t) : pmtPid(0) {
 	pMsgQ = CMsgQManager<FilterMessage>::getInstance().getMsgQ(PSI_INFO_MSGS);
 	type = t;
+}
+
+CPAT::CPAT(const UINT16& pmtPid, const SectionFilterType& t) : pmtPid(pmtPid) {
+	pMsgQ = CMsgQManager<FilterMessage>::getInstance().getMsgQ(PSI_INFO_MSGS);
+	type = t;	
 }
 
 std::vector<PROGRAM_T>& CPAT::getPATInfo() {

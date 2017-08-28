@@ -21,41 +21,54 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <http://unlicense.org>
 */
 
-#ifndef __PAT_H__
-#define __PAT_H__
+#ifndef __PMT_H__
+#define __PMT_H__
 
-#include <vector>
-#include <bitset>
 #include "tsfilter.h"
 #include "json_spirit.h"
+#include <bitset>
+#include <forward_list>
 
-struct PROGRAM_T {
-	UINT8  version;
-	UINT8  section_number;
-	UINT16 program_number;
-	UINT16 pmtPid;
+//#define PRINT_PMT_INFO(x) std::printf("%30s = %10d [%#10x]\n", #x, x, x);
+#define PRINT_PMT_INFO(x)
+#define PMT_HEADER_SIZE 12
+
+struct ES_INFO_T {
+	UINT8 stream_type;
+	UINT16 es_pid;
 };
 
-class CPAT : public CTsFilter {
+struct PMT_INFO_T {
+	UINT8 version;
+	UINT8 section_number;
+	UINT16 program_number;
+	UINT16 pcr_pid;
+	std::forward_list<ES_INFO_T> es_info;
+};
+
+class CPMT : public CTsFilter {
 public:
-	CPAT();
-	CPAT(const SectionFilterType& t);
-	CPAT(const UINT16& pmtPid, const SectionFilterType& t);
-	virtual UINT32 getNumberOfProgram();
-	virtual std::vector<PROGRAM_T>& getPATInfo();
-	virtual void savePatToJson();
-	virtual bool isExistSection(UINT8 version, UINT8 section_number);
+	CPMT();
+	CPMT(const SectionFilterType& t);
+	CPMT(const UINT16& pmtPid, const SectionFilterType& t);
+	virtual ~CPMT();
+	virtual void addNewPMTtoList(PMT_INFO_T newPmt);
+	virtual void addNewEStoPMT(PMT_INFO_T newPmt, ES_INFO_T newEs);
+	virtual void printPMTList(void);
+	virtual void savePmtToJson(void);
+	virtual UINT32 getPMTProgNum(void);	
+	virtual bool isExistSection(UINT8 version, UINT8 section_number, UINT16 program_number);
 	virtual void notify(const FilterStatus& stat) override;
 	virtual void parsing(UINT8 *pData) override;
-	virtual ~CPAT();
 private:
-	UINT32 numProgs = 0;
+	UINT32 numProgs;
 	UINT16 pmtPid;
+	UINT16 program_number;
 	UINT8  version = 0xE0;         // lower 5 bit valid
-	UINT8  section_count = 0;
+	UINT8  section_count = 0;	
 	UINT8  last_section_number = 0;
 	std::bitset<256> b;
-	std::vector<PROGRAM_T> v;
-	std::shared_ptr<CMsgQ<FilterMessage>> pMsgQ;
+	std::forward_list<PMT_INFO_T> pmtList;
+	std::shared_ptr<CMsgQ<FilterMessage>> pMsgQ;		
 };
 #endif

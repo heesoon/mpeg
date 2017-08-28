@@ -50,8 +50,7 @@ void CTsFilterManager::attachSectionFilter(uint32_t pid, const SectionFilterType
 			um.emplace(std::make_pair(pid, std::make_shared<CPAT>(type)));
 			break;
 		case SectionFilterType::PMT:
-			//um.emplace(std::make_pair(pid, std::make_shared<CPMT>(type)));
-			std::cout << "attach " << pid << std::endl;
+			um.emplace(std::make_pair(pid, std::make_shared<CPMT>(pid, type)));
 			break;
 		default:
 			break;
@@ -104,7 +103,7 @@ void CTsFilterManager::eventHandler() {
 		}
 		break;		
 		case FilterMessage::PMT_PARSING_DONE:
-			// TODO.
+			std::cout << "PMT Parsing Done ..." << std::endl;
 		break;
 		case FilterMessage::PAT_VERSION_UP:
 		case FilterMessage::PMT_VERSION_UP:

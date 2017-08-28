@@ -28,6 +28,7 @@ For more information, please refer to <http://unlicense.org>
 #include <memory>
 #include <thread>
 #include "pat.h"
+#include "pmt.h"
 
 class CTsFilterManager {
 public:

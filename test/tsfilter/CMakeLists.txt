@@ -5,6 +5,7 @@ set(SRC_LIST
 	${CMAKE_SOURCE_DIR}/tsreader.cpp
 	${CMAKE_SOURCE_DIR}/tsfilter.cpp
 	${CMAKE_SOURCE_DIR}/pat.cpp
+	${CMAKE_SOURCE_DIR}/pmt.cpp
 	${CMAKE_SOURCE_DIR}/tsfilterManager.cpp
   	${CMAKE_SOURCE_DIR}/main.cpp
 )
