@@ -22,6 +22,7 @@ For more information, please refer to <http://unlicense.org>
 */
 #include <iostream>
 #include <fstream>
+#include <string>
 #include "pat.h"
 
 //#define PRINT_PAT_HEADER_INFO(x) std::printf("%30s = %10d [%#10x]\n", #x, x, x);
@@ -46,6 +47,7 @@ std::vector<PROGRAM_T>& CPAT::getPATInfo() {
 
 void CPAT::savePatToJson() {
 	std::ofstream os("result/pat_result.txt");
+	//std::ofstream os("/var/www/html/pat_result.txt");
 
 	json_spirit::Array arr;
 
@@ -90,7 +92,7 @@ bool CPAT::isExistSection(UINT8 version, UINT8 section_number) {
 	}
 	else {
 		// version up case check
-		status = FilterStatus::FILTER_VERSION_UP;
+		pMsgQ->sendMsg(FilterMessage::PAT_VERSION_UP);
 	}
 
 	return false;
@@ -143,13 +145,21 @@ void CPAT::parsing(UINT8 *pData) {
 
     // filter status update
 	if(status == FilterStatus::FILTER_INITED) {
-		this->version = version_number;
+		this->version 				= version_number;
+		this->last_section_number	= last_section_number;
 		status = FilterStatus::FILTER_STARTED;
 	}
 
 	if(isExistSection(version_number, section_number) == true) {
 		//std::cout << "it is duplication section ... " << std::endl;
 		return;
+	}
+
+	// filter version up
+	if(status == FilterStatus::FILTER_VERSION_UP) {
+		status = FilterStatus::FILTER_INITED;
+		b.reset();
+		v.clear();
 	}
 
 	// filter status update
@@ -171,7 +181,6 @@ void CPAT::parsing(UINT8 *pData) {
 			program.section_number 	= section_number;
 			program.pmtPid 			= GET_PID(pSection+2);
 
-			//std::printf("v [%d], s [%d] \n", version_number, section_number);
 			v.push_back(program);
 			numProgs++;
 		}

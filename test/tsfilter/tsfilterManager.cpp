@@ -50,6 +50,8 @@ void CTsFilterManager::attachSectionFilter(uint32_t pid, const SectionFilterType
 			um.emplace(std::make_pair(pid, std::make_shared<CPAT>(type)));
 			break;
 		case SectionFilterType::PMT:
+			//um.emplace(std::make_pair(pid, std::make_shared<CPMT>(type)));
+			std::cout << "attach " << pid << std::endl;
 			break;
 		default:
 			break;
@@ -88,33 +90,31 @@ void CTsFilterManager::eventHandler() {
 		{
 			std::cout << "PAT Parsing Done ..." << std::endl;
 
-#if 0			
 			auto pat = um.find(0);
 			if(pat != um.end()) {
-				std::ofstream ofs ("pat_result.txt");
-
-				UINT32 i = 1;
-				std::vector<PROGRAM_T>& progs = static_cast<CPAT*>(pat->second.get())->getPATInfo();
-				
-				for(auto& p : progs) {
-					ofs << "index : " << i++ << std::endl;
-					ofs << "version : " << p.version << std::endl;
-					ofs << "section_number : " << p.section_number << std::endl;
-					ofs << "program_number : " << p.program_number << std::endl;
-					ofs << "pmtPid : " << p.pmtPid << std::endl;
-				}
-				ofs.close();
-			}
-#endif	
-			auto pat = um.find(0);
-			if(pat != um.end()) {
+				std::cout << "number of program : " << static_cast<CPAT*>(pat->second.get())->getNumberOfProgram() << std::endl;
 				static_cast<CPAT*>(pat->second.get())->savePatToJson();
+
+				// attach PMT filter
+				std::vector<PROGRAM_T>& progs = static_cast<CPAT*>(pat->second.get())->getPATInfo();
+				for(auto& p : progs) {
+					attachSectionFilter(p.pmtPid, SectionFilterType::PMT);
+				}
 			}		
 		}
-		break;
+		break;		
 		case FilterMessage::PMT_PARSING_DONE:
 			// TODO.
-		break;		
+		break;
+		case FilterMessage::PAT_VERSION_UP:
+		case FilterMessage::PMT_VERSION_UP:
+		{
+			std::cout << "Table Version Up ..." << std::endl;
+			for(auto f : um) {
+				f.second->notify(FilterStatus::FILTER_VERSION_UP);
+			}
+		}
+		break;
 		default:
 		break;
 	}
