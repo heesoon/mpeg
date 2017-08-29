@@ -41,6 +41,7 @@ public:
 	virtual ~CTsFilterManager();
 private:
 	bool inLoop;
+	bool isAssigingFilter;
 	std::thread t;
 	std::shared_ptr<CMsgQ<FilterMessage>> pMsgQ;
 	std::unordered_map<uint32_t, std::shared_ptr<CTsFilter>> um;

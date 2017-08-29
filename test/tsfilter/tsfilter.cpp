@@ -24,23 +24,20 @@ For more information, please refer to <http://unlicense.org>
 #include "tsfilter.h"
 
 CTsFilter::CTsFilter() {
-
 }
 
 void CTsFilter::setFilterStatus(const FilterStatus& stat) {
-	std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;
+	status = stat;
 }
 
 const FilterStatus& CTsFilter::getFilterStatus() {
-	//std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;
 	return status;	
 }
 
-void CTsFilter::setSectionFilterType(const SectionFilterType& stat) {
-	std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;
+void CTsFilter::setSectionFilterType(const SectionFilterType& type) {
+	this->type = type;
 }
 
 const SectionFilterType& CTsFilter::getSectionFilterType() {
-	//std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;
 	return type;
 }

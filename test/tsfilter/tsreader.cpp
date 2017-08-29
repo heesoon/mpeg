@@ -32,7 +32,7 @@ void CTsReader4File::openMedia() {
 	std::getline(std::cin, fpath);
 	if(fpath.empty()) {
 		//fpath = "/home/hskim/stream/secureMedia/fantasy_clear.ts";
-		//fpath = "/home/hskim/mpeg/test/stream/test.ts";
+		//fpath = "/home/hskim/stream/channel09.ts";
 		fpath = "../stream/test.ts";
 	}
 	std::cout << std::endl;
@@ -43,9 +43,7 @@ void CTsReader4File::openMedia() {
 		return;
 	}
 
-	//filterMgr = new CTsFilterManager;
 	upFilterMgr = std::make_unique<CTsFilterManager>();
-	//upFilterMgr->init();
 	std::cout << "Success file open.." << std::endl;
 }
 
@@ -56,6 +54,8 @@ void CTsReader4File::readMedia() {
 		upFilterMgr->dispatchPidAndSection((UINT8*)buffer);
 	}
 	delete [] buffer;
+
+	std::cout << "exit reading ... " << std::endl;
 }
 
 void CTsReader4File::closeMedia() {
@@ -86,16 +86,6 @@ CTsReader4IP::~CTsReader4IP() {
 }
 
 // implementation for CTsReader4 Factory
-#if 0
-CTsReader* CTsReaderFactory::createNewTsReader(const MediaType& type) {
-	if(type == MediaType::MEDIA_TYPE_FILE)
-		return new CTsReader4File;
-	if(type == MediaType::MEDIA_TYPE_IP)
-		return new CTsReader4IP;
-
-	return nullptr;
-}
-#else
 std::unique_ptr<CTsReader> CTsReaderFactory::createNewTsReader(const MediaType& type) {
 	if(type == MediaType::MEDIA_TYPE_FILE)
 		return std::make_unique<CTsReader4File>();
@@ -104,4 +94,3 @@ std::unique_ptr<CTsReader> CTsReaderFactory::createNewTsReader(const MediaType& 
 
 	return nullptr;
 }
-#endif

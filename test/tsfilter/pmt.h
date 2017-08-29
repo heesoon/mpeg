@@ -48,9 +48,7 @@ struct PMT_INFO_T {
 
 class CPMT : public CTsFilter {
 public:
-	CPMT();
-	CPMT(const SectionFilterType& t);
-	CPMT(const UINT16& pmtPid, const SectionFilterType& t);
+	CPMT(const UINT16& pid, const SectionFilterType& t);
 	virtual ~CPMT();
 	virtual void addNewPMTtoList(PMT_INFO_T newPmt);
 	virtual void addNewEStoPMT(PMT_INFO_T newPmt, ES_INFO_T newEs);
@@ -58,15 +56,15 @@ public:
 	virtual void savePmtToJson(void);
 	virtual UINT32 getPMTProgNum(void);	
 	virtual bool isExistSection(UINT8 version, UINT8 section_number, UINT16 program_number);
-	virtual void notify(const FilterStatus& stat) override;
-	virtual void parsing(UINT8 *pData) override;
+	virtual void notify(const FilterStatus& stat) 	override;
+	virtual void parsing(UINT8 *pData, UINT16 pid) 	override;
 private:
-	UINT32 numProgs;
-	UINT16 pmtPid;
+	UINT16 pid;
 	UINT16 program_number;
-	UINT8  version = 0xE0;         // lower 5 bit valid
-	UINT8  section_count = 0;	
-	UINT8  last_section_number = 0;
+	UINT8  version 				= 0xE0;         // lower 5 bit valid
+	UINT8  section_count 		= 0;	
+	UINT8  last_section_number 	= 0;
+	UINT32 numProgs;
 	std::bitset<256> b;
 	std::forward_list<PMT_INFO_T> pmtList;
 	std::shared_ptr<CMsgQ<FilterMessage>> pMsgQ;		

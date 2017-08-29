@@ -58,8 +58,8 @@ public:
 	virtual void setSectionFilterType(const SectionFilterType& stat);
 	virtual const FilterStatus& getFilterStatus();
 	virtual const SectionFilterType& getSectionFilterType();	
-	virtual void notify(const FilterStatus& stat) = 0;
-	virtual void parsing(UINT8 *pData) = 0;
+	virtual void notify(const FilterStatus& stat) 	= 0;
+	virtual void parsing(UINT8 *pData, UINT16 pid) 	= 0;
 protected:
 	SectionFilterType type;
 	FilterStatus status;

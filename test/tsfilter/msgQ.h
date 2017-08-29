@@ -70,7 +70,6 @@ T CMsgQ<T>::receiveMsg(void) {
     msg = msgQ.front();
     msgQ.pop();
 
-    //std::cout <<"in msg = " << std::endl;
     return msg;
 }
 

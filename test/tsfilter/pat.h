@@ -38,22 +38,21 @@ struct PROGRAM_T {
 
 class CPAT : public CTsFilter {
 public:
-	CPAT();
-	CPAT(const SectionFilterType& t);
-	CPAT(const UINT16& pmtPid, const SectionFilterType& t);
+	CPAT(const UINT16& pid, const SectionFilterType& t);
 	virtual UINT32 getNumberOfProgram();
 	virtual std::vector<PROGRAM_T>& getPATInfo();
+	virtual void printPATInfo();
 	virtual void savePatToJson();
 	virtual bool isExistSection(UINT8 version, UINT8 section_number);
-	virtual void notify(const FilterStatus& stat) override;
-	virtual void parsing(UINT8 *pData) override;
+	virtual void notify(const FilterStatus& stat) 	override;
+	virtual void parsing(UINT8 *pData, UINT16 pid) 	override;
 	virtual ~CPAT();
 private:
-	UINT32 numProgs = 0;
-	UINT16 pmtPid;
-	UINT8  version = 0xE0;         // lower 5 bit valid
-	UINT8  section_count = 0;
-	UINT8  last_section_number = 0;
+	UINT16 pid;										// current filter pid
+	UINT8  version 				= 0xE0;          	// current filter version : lower 5 bit valid
+	UINT8  section_count 		= 0;
+	UINT8  last_section_number 	= 0;
+	UINT32 numProgs 			= 0;
 	std::bitset<256> b;
 	std::vector<PROGRAM_T> v;
 	std::shared_ptr<CMsgQ<FilterMessage>> pMsgQ;

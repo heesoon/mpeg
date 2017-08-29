@@ -25,20 +25,9 @@ For more information, please refer to <http://unlicense.org>
 #include <string>
 #include "pmt.h"
 
-CPMT::CPMT() : pmtPid(0) {
+CPMT::CPMT(const UINT16& pid, const SectionFilterType& t) : pid(pid) {
 	pMsgQ = CMsgQManager<FilterMessage>::getInstance().getMsgQ(PSI_INFO_MSGS);
 	status = FilterStatus::FILTER_INITED;
-	b.reset();
-}
-
-CPMT::CPMT(const SectionFilterType& t) : pmtPid(0) {
-	pMsgQ = CMsgQManager<FilterMessage>::getInstance().getMsgQ(PSI_INFO_MSGS);
-	type = t;
-	b.reset();
-}
-
-CPMT::CPMT(const UINT16& pmtPid, const SectionFilterType& t) : pmtPid(pmtPid) {
-	pMsgQ = CMsgQManager<FilterMessage>::getInstance().getMsgQ(PSI_INFO_MSGS);
 	type = t;
 	b.reset();
 }
@@ -98,7 +87,6 @@ void CPMT::savePmtToJson(void)
 	//pmtList.sort([](PMT_INFO_T& prog1, PMT_INFO_T& prog2) 
 	//				-> bool { return prog1.program_number < prog2.program_number; });
 
-	//std::ofstream os("/Users/hskim/Sites/mpeg/pmt_json.txt");
 	std::ofstream os("result/pmt_json.txt", std::ofstream::app);
 
 	json_spirit::Array pmtArr;
@@ -135,7 +123,7 @@ void CPMT::savePmtToJson(void)
 
 bool CPMT::isExistSection(UINT8 version, UINT8 section_number, UINT16 program_number) {
 	if(this->program_number != program_number) {
-		std::cout << "program number mismatch ..." << std::endl;
+		//std::cout << "program number mismatch ..." << std::endl;
 	}
 
 	if(this->version == version) {
@@ -159,7 +147,13 @@ void CPMT::notify(const FilterStatus& stat) {
 
 }
 
-void CPMT::parsing(UINT8 *pData) {
+void CPMT::parsing(UINT8 *pData, UINT16 pid) {
+
+	if(this->pid != pid) {
+		std::cout << "pid mismatched ... " << std::endl;
+		return;
+	}
+
 	UINT8 *pSection;
 	UINT8 point_field;
 
@@ -224,9 +218,8 @@ void CPMT::parsing(UINT8 *pData) {
 		status = FilterStatus::FILTER_STARTED;
 	}
 
-	if(isExistSection(version_number, section_number, program_number) == true)
-	{
-		std::cout << "it is duplication section ... " << std::endl;
+	if(isExistSection(version_number, section_number, program_number) == true) {
+		//std::cout << "it is duplication section ... " << std::endl;
 		return;
 	}
 
@@ -234,7 +227,10 @@ void CPMT::parsing(UINT8 *pData) {
 	if(status == FilterStatus::FILTER_VERSION_UP) {
 		status = FilterStatus::FILTER_INITED;
 		b.reset();
-		//v.clear();
+		for(auto& fl : pmtList) {
+			fl.es_info.clear();
+		}
+		pmtList.clear();
 	}
 
 	// filter status update

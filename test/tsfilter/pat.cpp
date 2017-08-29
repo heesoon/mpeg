@@ -23,6 +23,8 @@ For more information, please refer to <http://unlicense.org>
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cstdio>
+#include <algorithm>
 #include "pat.h"
 
 //#define PRINT_PAT_HEADER_INFO(x) std::printf("%30s = %10d [%#10x]\n", #x, x, x);
@@ -31,23 +33,31 @@ For more information, please refer to <http://unlicense.org>
 #define GET_2BYTE(x) 		(((*(x)) << 8)|((*(x+1))))
 #define GET_PID(x) 			((GET_2BYTE(x))&0x1FFF)
 
-CPAT::CPAT() : pmtPid(0) {
+CPAT::CPAT(const UINT16& pid, const SectionFilterType& t) : pid(pid) {
 	pMsgQ = CMsgQManager<FilterMessage>::getInstance().getMsgQ(PSI_INFO_MSGS);
 	status = FilterStatus::FILTER_INITED;
-}
-
-CPAT::CPAT(const SectionFilterType& t) : pmtPid(0) {
-	pMsgQ = CMsgQManager<FilterMessage>::getInstance().getMsgQ(PSI_INFO_MSGS);
-	type = t;
-}
-
-CPAT::CPAT(const UINT16& pmtPid, const SectionFilterType& t) : pmtPid(pmtPid) {
-	pMsgQ = CMsgQManager<FilterMessage>::getInstance().getMsgQ(PSI_INFO_MSGS);
 	type = t;	
 }
 
 std::vector<PROGRAM_T>& CPAT::getPATInfo() {
 	return v;
+}
+
+void CPAT::printPATInfo(void)
+{
+	int i = 1;
+
+	// sort by porgram number
+	//v.sort([](PROGRAM_T& prog1, PROGRAM_T& prog2) 
+	//				-> bool { return prog1.program_number < prog2.program_number; });
+
+	for(auto program : v)
+	{
+		std::printf("%3d] PAT version = %2d Section = %2d program_number = %3d [PID %5d (%#5x)]\n" \
+		, i, program.version, program.section_number, program.program_number, program.pmtPid, program.pmtPid);
+
+		i++;
+	}
 }
 
 void CPAT::savePatToJson() {
@@ -103,7 +113,12 @@ bool CPAT::isExistSection(UINT8 version, UINT8 section_number) {
 	return false;
 }
 
-void CPAT::parsing(UINT8 *pData) {
+void CPAT::parsing(UINT8 *pData, UINT16 pid) {
+
+	if(this->pid != pid) {
+		return;
+	}
+
 	bool section_syntax_indicator;
 	bool current_next_indicator;
 
@@ -204,5 +219,4 @@ void CPAT::parsing(UINT8 *pData) {
 
 CPAT::~CPAT() {
 	std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;
-	v.clear();
 }

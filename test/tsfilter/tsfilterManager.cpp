@@ -24,12 +24,17 @@ For more information, please refer to <http://unlicense.org>
 #include <fstream>
 #include "tsfilterManager.h"
 
-CTsFilterManager::CTsFilterManager() {
+CTsFilterManager::CTsFilterManager() : isAssigingFilter(false), inLoop(false) {
 	init();
 }
 
 void CTsFilterManager::init() {
 	inLoop = true;
+
+	// pmt result file delete
+	if(std::remove("result/pmt_json.txt") != 0) {
+		std::cout << "pmt result file delete fail..." << std::endl;
+	}
 
 	pMsgQ = CMsgQManager<FilterMessage>::getInstance().createMsgQ(PSI_INFO_MSGS);
 
@@ -45,9 +50,11 @@ void CTsFilterManager::init() {
 }
 
 void CTsFilterManager::attachSectionFilter(uint32_t pid, const SectionFilterType& type) {
+	isAssigingFilter = true;
+
 	switch(type) {
 		case SectionFilterType::PAT:
-			um.emplace(std::make_pair(pid, std::make_shared<CPAT>(type)));
+			um.emplace(std::make_pair(pid, std::make_shared<CPAT>(pid, type)));
 			break;
 		case SectionFilterType::PMT:
 			um.emplace(std::make_pair(pid, std::make_shared<CPMT>(pid, type)));
@@ -55,6 +62,8 @@ void CTsFilterManager::attachSectionFilter(uint32_t pid, const SectionFilterType
 		default:
 			break;
 	}
+
+	isAssigingFilter = false;
 }
 
 void CTsFilterManager::detachSectionFilter(const SectionFilterType& type) {
@@ -67,7 +76,11 @@ void CTsFilterManager::detachSectionFilter(const SectionFilterType& type) {
 }
 
 void CTsFilterManager::dispatchPidAndSection(UINT8 *buff) {
-	uint32_t pid;
+	UINT32 pid;
+
+	if(isAssigingFilter == true) {
+		std::cout << "filter assigning ..." << std::endl;
+	}
 
 	if(buff[0] != 0x47) {
 		std::cout << "Not Header Start " << std::endl;
@@ -75,14 +88,17 @@ void CTsFilterManager::dispatchPidAndSection(UINT8 *buff) {
 	}
 
 	pid = ((buff[1] & 0x1f) << 8) | buff[2];
+
 	auto search = um.find(pid);
 	if(search != um.end()) {
-		search->second->parsing(buff+4);
+
+		search->second->parsing(buff+4, pid);
 	}
 }
 
 void CTsFilterManager::eventHandler() {
 	FilterMessage msg = pMsgQ->receiveMsg();
+	std::cout << "new message arrived ... " << std::endl;
 	switch(msg) {
 		case FilterMessage::PAT_PARSING_DONE:
 		{
@@ -94,11 +110,12 @@ void CTsFilterManager::eventHandler() {
 				static_cast<CPAT*>(pat->second.get())->savePatToJson();
 
 				// attach PMT filter
-				std::vector<PROGRAM_T>& progs = static_cast<CPAT*>(pat->second.get())->getPATInfo();
-				for(auto& p : progs) {
+				UINT32 count = 0;
+				std::vector<PROGRAM_T> progs = static_cast<CPAT*>(pat->second.get())->getPATInfo();
+				for(auto p : progs) {
 					attachSectionFilter(p.pmtPid, SectionFilterType::PMT);
-				}
-			}		
+				}			
+			}
 		}
 		break;		
 		case FilterMessage::PMT_PARSING_DONE:
@@ -121,4 +138,5 @@ void CTsFilterManager::eventHandler() {
 CTsFilterManager::~CTsFilterManager() {
 	std::cout << __FUNCTION__ << ", " << __LINE__ << std::endl;
 	inLoop = false;
+	//t.join();
 }
